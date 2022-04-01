@@ -1,4 +1,4 @@
-"""Tasks for controlling airbyte connections"""
+"""Tasks for managing airbyte connections"""
 from typing import TYPE_CHECKING, Dict, Optional, Sequence, Union
 
 from prefect import get_run_logger, task
