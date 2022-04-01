@@ -1,0 +1,2 @@
+include versioneer.py
+include airbyte/_version.py
