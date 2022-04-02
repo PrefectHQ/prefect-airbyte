@@ -34,4 +34,5 @@ plugins:
 nav:
     - Home: index.md
     - Connections: connections.md
+    - Client: client.md
 
