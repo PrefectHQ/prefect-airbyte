@@ -1,6 +1,7 @@
 # prefect-airbyte
 
-## Welcome! &emsp; <img src="imgs/airbyte.png" width="40" height="55" />
+## Welcome!
+<!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
 
 `prefect-airbyte` is a collections of prebuilt Prefect tasks that can be used to quickly construct Prefect flows.
 
@@ -77,7 +78,7 @@ from prefect_airbyte.configuration import export_configuration
 @task
 def zip_and_write_somewhere(
       airbyte_config: bytearray
-      somewhere: str = '**/my_destination.gz','
+      somewhere: str = '*://**/my_destination.gz',
 ):
       with gzip.open(somewhere, 'wb') as f:
             f.write(airbyte_configuration)

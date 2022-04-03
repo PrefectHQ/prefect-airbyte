@@ -48,9 +48,9 @@ class AirbyteClient:
             raise err.AirbyteServerNotHealthyException(e)
 
     def export_configuration(
+        self,
         airbyte_base_url: str,
         session: requests.Session,
-        logger: logging.Logger
     ) -> bytearray:
         """
         Trigger an export of Airbyte configuration &mdash; [see the airbyte docs for `/v1/deployment/export`](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/deployment/export).
@@ -68,7 +68,7 @@ class AirbyteClient:
         try:
             response = session.post(get_connection_url)
             if response.status_code == 200:
-                logger.debug("Export configuration response: %s", response)
+                self.logger.debug("Export configuration response: %s", response)
                 export_config = response.content
                 return export_config
         except RequestException as e:
