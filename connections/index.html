@@ -361,7 +361,7 @@
 
 
 <h2 id="prefect_airbyte.connections.trigger_sync" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">trigger_sync</span><span class="p">(</span><span class="n">airbyte_server_host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s1">&#39;8000&#39;</span><span class="p">,</span> <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">connection_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">poll_interval_s</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">trigger_sync</span><span class="p">(</span><span class="n">airbyte_server_host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s1">&#39;8000&#39;</span><span class="p">,</span> <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">connection_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">poll_interval_s</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">status_updates</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -429,6 +429,12 @@ Airbyte API for status, if provided this value will
 override the default polling time of 15 seconds.</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>bool</code></td>
+        <td><code>status_updates</code></td>
+        <td><p>whether to log status as the task polls jobs</p></td>
+        <td><em>required</em></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -473,6 +479,7 @@ override the default polling time of 15 seconds.</p></td>
     <span class="n">airbyte_api_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v1&quot;</span><span class="p">,</span>
     <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">poll_interval_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="n">status_updates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Task run method for triggering an Airbyte Connection.</span>
@@ -501,6 +508,7 @@ override the default polling time of 15 seconds.</p></td>
 <span class="sd">        int poll_interval_s: this task polls the</span>
 <span class="sd">            Airbyte API for status, if provided this value will</span>
 <span class="sd">            override the default polling time of 15 seconds.</span>
+<span class="sd">        bool status_updates: whether to log status as the task polls jobs</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: connection_id (str) and succeeded_at (timestamp str)</span>
@@ -581,6 +589,7 @@ override the default polling time of 15 seconds.</p></td>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> failed.&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span><span class="o">.</span><span class="n">AirbyteSyncJobFailed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> failed.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">status_updates</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">job_status</span><span class="p">)</span>
                 <span class="c1"># wait for next poll interval</span>
                 <span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval_s</span><span class="p">)</span>
 

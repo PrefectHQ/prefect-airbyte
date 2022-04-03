@@ -219,7 +219,7 @@
       
         <li class="md-nav__item">
   <a href="#welcome" class="md-nav__link">
-    Welcome!
+    Welcome! &emsp; 
   </a>
   
 </li>
@@ -380,7 +380,7 @@
       
         <li class="md-nav__item">
   <a href="#welcome" class="md-nav__link">
-    Welcome!
+    Welcome! &emsp; 
   </a>
   
 </li>
@@ -475,7 +475,7 @@
 
 
 <h1 id="prefect-airbyte">prefect-airbyte</h1>
-<h2 id="welcome">Welcome!</h2>
+<h2 id="welcome">Welcome! &emsp; <img src="imgs/airbyte.png" width="40" height="55" /></h2>
 <p><code>prefect-airbyte</code> is a collections of prebuilt Prefect tasks that can be used to quickly construct Prefect flows.</p>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="python-setup">Python setup</h3>
@@ -500,10 +500,27 @@
       <span class="c1"># Run other tasks and subflows here</span>
 
       <span class="n">trigger_sync</span><span class="p">(</span>
-            <span class="n">connection_id</span><span class="o">=</span><span class="s2">&quot;your-connection-id-to-sync&quot;</span>
+            <span class="n">connection_id</span><span class="o">=</span><span class="s2">&quot;your-connection-id-to-sync&quot;</span><span class="p">,</span>
+            <span class="n">poll_interval_s</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">status_updates</span><span class="o">=</span><span class="kc">True</span>
       <span class="p">)</span>
 
 <span class="n">example_trigger_sync_flow</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="go">❯ python airbyte_syncs.py</span>
+<span class="go">03:46:03 | prefect.engine - Created flow run &#39;thick-seahorse&#39; for flow &#39;example_trigger_sync_flow&#39;</span>
+<span class="go">03:46:03 | Flow run &#39;thick-seahorse&#39; - Using task runner &#39;ConcurrentTaskRunner&#39;</span>
+<span class="go">03:46:03 | Flow run &#39;thick-seahorse&#39; - Created task run &#39;trigger_sync-35f0e9c2-0&#39; for task &#39;trigger_sync&#39;</span>
+<span class="go">03:46:03 | prefect - trigger airbyte connection: e1b2078f-882a-4f50-9942-cfe34b2d825b, poll interval 3 seconds</span>
+<span class="go">03:46:03 | prefect - pending</span>
+<span class="go">03:46:06 | prefect - running</span>
+<span class="go">03:46:09 | prefect - running</span>
+<span class="go">03:46:12 | prefect - running</span>
+<span class="go">03:46:16 | prefect - running</span>
+<span class="go">03:46:19 | prefect - running</span>
+<span class="go">03:46:22 | prefect - Job 26 succeeded.</span>
+<span class="go">03:46:22 | Task run &#39;trigger_sync-35f0e9c2-0&#39; - Finished in state Completed(None)</span>
+<span class="go">03:46:22 | Flow run &#39;thick-seahorse&#39; - Finished in state Completed(&#39;All states completed.&#39;)</span>
 </code></pre></div>
 <h4 id="export-an-airbyte-instances-configuration">Export an Airbyte instance's configuration</h4>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gzip</span>
@@ -514,9 +531,9 @@
 <span class="nd">@task</span>
 <span class="k">def</span> <span class="nf">zip_and_write_somewhere</span><span class="p">(</span>
       <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span>
-      <span class="n">somwhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span><span class="s1">&#39;</span>
+      <span class="n">somewhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;**/my_destination.gz&#39;</span><span class="p">,</span><span class="s1">&#39;</span>
 <span class="p">):</span>
-      <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+      <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">somewhere</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_configuration</span><span class="p">)</span>
 
 <span class="nd">@flow</span>
