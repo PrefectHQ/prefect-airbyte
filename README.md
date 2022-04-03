@@ -56,9 +56,9 @@ from prefect_airbyte.configuration import export_configuration
 @task
 def zip_and_write_somewhere(
       airbyte_config: bytearray
-      somwhere: str = 'my_destination.gz','
+      somewhere: str = '**/my_destination.gz','
 ):
-      with gzip.open('my_destination.gz', 'wb') as f:
+      with gzip.open(somewhere, 'wb') as f:
             f.write(airbyte_configuration)
 
 @flow
