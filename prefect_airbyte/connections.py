@@ -24,6 +24,7 @@ async def trigger_sync(
     airbyte_api_version: str = "v1",
     connection_id: str = None,
     poll_interval_s: int = 15,
+    status_updates: bool = False
 ) -> dict:
     """
     Task run method for triggering an Airbyte Connection.
@@ -52,6 +53,7 @@ async def trigger_sync(
         int poll_interval_s: this task polls the
             Airbyte API for status, if provided this value will
             override the default polling time of 15 seconds.
+        bool status_updates: whether to log status as the task polls jobs
 
     Returns:
         dict: connection_id (str) and succeeded_at (timestamp str)
@@ -132,6 +134,7 @@ async def trigger_sync(
                 logger.error(f"Job {job_id} failed.")
                 raise err.AirbyteSyncJobFailed(f"Job {job_id} failed.")
             else:
+                if status_updates: logger.info(job_status)
                 # wait for next poll interval
                 sleep(poll_interval_s)
 

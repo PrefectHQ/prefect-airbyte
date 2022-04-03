@@ -82,7 +82,6 @@ class AirbyteClient:
             response = session.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
-            self.logger.info(response.json())
 
             response.raise_for_status()
 
@@ -112,7 +111,6 @@ class AirbyteClient:
                 get_connection_url, json={"connectionId": connection_id}
             )
             if response.status_code == 200:
-                self.logger.info(response.json())
                 job_id = response.json()["job"]["id"]
                 job_created_at = response.json()["job"]["createdAt"]
                 return job_id, job_created_at
@@ -134,7 +132,6 @@ class AirbyteClient:
         try:
             response = session.post(get_connection_url, json={"id": job_id})
             if response.status_code == 200:
-                self.logger.info(response.json())
                 job_status = response.json()["job"]["status"]
                 job_created_at = response.json()["job"]["createdAt"]
                 job_updated_at = response.json()["job"]["updatedAt"]

@@ -40,11 +40,32 @@ def example_trigger_sync_flow():
       # Run other tasks and subflows here
 
       trigger_sync(
-            connection_id="your-connection-id-to-sync"
+            connection_id="your-connection-id-to-sync",
+            poll_interval_s=3,
+            status_updates=True
       )
 
 example_trigger_sync_flow()
 ```
+
+```console
+
+❯ python airbyte_syncs.py
+03:46:03 | prefect.engine - Created flow run 'thick-seahorse' for flow 'orchestrate-airbyte'
+03:46:03 | Flow run 'thick-seahorse' - Using task runner 'ConcurrentTaskRunner'
+03:46:03 | Flow run 'thick-seahorse' - Created task run 'trigger_sync-35f0e9c2-0' for task 'trigger_sync'
+03:46:03 | prefect - trigger airbyte connection: e1b2078f-882a-4f50-9942-cfe34b2d825b, poll interval 3 seconds
+03:46:03 | prefect - pending
+03:46:06 | prefect - running
+03:46:09 | prefect - running
+03:46:12 | prefect - running
+03:46:16 | prefect - running
+03:46:19 | prefect - running
+03:46:22 | prefect - Job 26 succeeded.
+03:46:22 | Task run 'trigger_sync-35f0e9c2-0' - Finished in state Completed(None)
+03:46:22 | Flow run 'thick-seahorse' - Finished in state Completed('All states completed.')
+```
+
 
 #### Export an Airbyte instance's configuration
 ```python
