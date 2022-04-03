@@ -72,6 +72,9 @@ async def export_configuration(
     session = airbyte.establish_session()
 
     logger.info("Initiating export of Airbyte configuration")
-    airbyte_config = airbyte.export_configuration(session)
+    airbyte_config = airbyte.export_configuration(
+        airbyte_base_url=airbyte_base_url,
+        session=session
+    )
 
     return airbyte_config

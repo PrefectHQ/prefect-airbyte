@@ -80,23 +80,27 @@ def zip_and_write_somewhere(
       airbyte_config: bytearray,
       somewhere: str = '*://**/my_destination.gz',
 ):
-      with gzip.open(somewhere, 'wb') as f:
-            f.write(airbyte_config)
+    with gzip.open(somewhere, 'wb') as f:
+        f.write(airbyte_config)
 
 @flow
-def example_export_configuration_flow():
+def example_export_configuration_flow(filepath: str):
 
-      # Run other tasks and subflows here
+    # Run other tasks and subflows here
 
-      airbyte_config = export_configuration(
-            airbyte_server_host="localhost",
-            airbyte_server_port="8000",
-            airbyte_api_version="v1",
-      )
+    airbyte_config = export_configuration(
+        airbyte_server_host="localhost",
+        airbyte_server_port="8000",
+        airbyte_api_version="v1",
+    )
 
-      zip_and_write_somewhere(airbyte_config=airbyte_config)
+    zip_and_write_somewhere(
+        somewhere=filepath,
+        airbyte_config=airbyte_config
+    )
 
-example_trigger_sync_flow()
+if __name__ == "__main__":
+    example_export_configuration_flow()
 ```
 
 ## Resources
