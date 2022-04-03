@@ -33,6 +33,8 @@ plugins:
         - README.md
 nav:
     - Home: index.md
-    - Connections: connections.md
     - Client: client.md
+    - Configuration: configuration.md
+    - Connections: connections.md
+
 

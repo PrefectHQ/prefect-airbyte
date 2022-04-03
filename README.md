@@ -23,20 +23,58 @@ pip install prefect-airbyte
 ```
 
 ### Airbyte setup
+See [the airbyte documention]() on how to get your own instance.
 
 
+### Examples
 
-### Write and run a flow
-
+#### Trigger a defined connection sync
 ```python
 from prefect import flow
-from prefect.context import get_run_context
-from prefect_airbyte import trigger_sync
+from prefect_airbyte.connections import trigger_sync
 
 
 @flow
-def airbyte_connection() ->:
-      pass
+def example_trigger_sync_flow():
+
+      # Run other tasks and subflows here
+
+      trigger_sync(
+            connection_id="your-connection-id-to-sync"
+      )
+
+example_trigger_sync_flow()
+```
+
+#### Export an Airbyte instance's configuration
+```python
+import gzip
+
+from prefect import flow, task
+from prefect_airbyte.configuration import export_configuration
+
+@task
+def zip_and_write_somewhere(
+      airbyte_config: bytearray
+      somwhere: str = 'my_destination.gz','
+):
+      with gzip.open('my_destination.gz', 'wb') as f:
+            f.write(airbyte_configuration)
+
+@flow
+def example_export_configuration_flow():
+
+      # Run other tasks and subflows here
+
+      airbyte_config = export_configuration(
+            airbyte_server_host="localhost",
+            airbyte_server_port="8000",
+            airbyte_api_version="v1",
+      )
+
+      zip_and_write_somewhere(airbyte_config=airbyte_config)
+
+example_trigger_sync_flow()
 ```
 
 ## Resources

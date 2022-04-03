@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: prefect-airbyte
-Version: 0+unknown
+Version: .0.0-1.g6c1a080.dirty
 Summary: Prefect tasks and subflows for interacting with Airbyte
 Home-page: https://github.com/PrefectHQ/prefect-airbyte
 Author: Prefect Technologies, Inc.
