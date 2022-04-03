@@ -1,6 +1,6 @@
 # prefect-airbyte
 
-## Welcome!
+## Welcome! &emsp; <img src="imgs/airbyte.png" width="30" height="40" />
 
 `prefect-airbyte` is a collections of prebuilt Prefect tasks that can be used to quickly construct Prefect flows.
 
