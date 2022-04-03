@@ -254,9 +254,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#write-and-run-a-flow" class="md-nav__link">
-    Write and run a flow
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trigger-a-defined-connection-sync" class="md-nav__link">
+    Trigger a defined connection sync
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-an-airbyte-instances-configuration" class="md-nav__link">
+    Export an Airbyte instance's configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -283,6 +303,36 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="client/" class="md-nav__link">
+        Client
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="configuration/" class="md-nav__link">
+        Configuration
+      </a>
     </li>
   
 
@@ -365,9 +415,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#write-and-run-a-flow" class="md-nav__link">
-    Write and run a flow
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trigger-a-defined-connection-sync" class="md-nav__link">
+    Trigger a defined connection sync
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#export-an-airbyte-instances-configuration" class="md-nav__link">
+    Export an Airbyte instance's configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -417,15 +487,52 @@
 <div class="highlight"><pre><span></span><code>pip install prefect-airbyte
 </code></pre></div>
 <h3 id="airbyte-setup">Airbyte setup</h3>
-<h3 id="write-and-run-a-flow">Write and run a flow</h3>
+<p>See <a href="">the airbyte documention</a> on how to get your own instance.</p>
+<h3 id="examples">Examples</h3>
+<h4 id="trigger-a-defined-connection-sync">Trigger a defined connection sync</h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span>
-<span class="kn">from</span> <span class="nn">prefect.context</span> <span class="kn">import</span> <span class="n">get_run_context</span>
-<span class="kn">from</span> <span class="nn">prefect_airbyte</span> <span class="kn">import</span> <span class="n">trigger_sync</span>
+<span class="kn">from</span> <span class="nn">prefect_airbyte.connections</span> <span class="kn">import</span> <span class="n">trigger_sync</span>
 
 
 <span class="nd">@flow</span>
-<span class="k">def</span> <span class="nf">airbyte_connection</span><span class="p">()</span> <span class="o">-&gt;</span><span class="p">:</span>
-      <span class="k">pass</span>
+<span class="k">def</span> <span class="nf">example_trigger_sync_flow</span><span class="p">():</span>
+
+      <span class="c1"># Run other tasks and subflows here</span>
+
+      <span class="n">trigger_sync</span><span class="p">(</span>
+            <span class="n">connection_id</span><span class="o">=</span><span class="s2">&quot;your-connection-id-to-sync&quot;</span>
+      <span class="p">)</span>
+
+<span class="n">example_trigger_sync_flow</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="export-an-airbyte-instances-configuration">Export an Airbyte instance's configuration</h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gzip</span>
+
+<span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span><span class="p">,</span> <span class="n">task</span>
+<span class="kn">from</span> <span class="nn">prefect_airbyte.configuration</span> <span class="kn">import</span> <span class="n">export_configuration</span>
+
+<span class="nd">@task</span>
+<span class="k">def</span> <span class="nf">zip_and_write_somewhere</span><span class="p">(</span>
+      <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span>
+      <span class="n">somwhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span><span class="s1">&#39;</span>
+<span class="p">):</span>
+      <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_configuration</span><span class="p">)</span>
+
+<span class="nd">@flow</span>
+<span class="k">def</span> <span class="nf">example_export_configuration_flow</span><span class="p">():</span>
+
+      <span class="c1"># Run other tasks and subflows here</span>
+
+      <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">export_configuration</span><span class="p">(</span>
+            <span class="n">airbyte_server_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+            <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s2">&quot;8000&quot;</span><span class="p">,</span>
+            <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+      <span class="p">)</span>
+
+      <span class="n">zip_and_write_somewhere</span><span class="p">(</span><span class="n">airbyte_config</span><span class="o">=</span><span class="n">airbyte_config</span><span class="p">)</span>
+
+<span class="n">example_trigger_sync_flow</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="resources">Resources</h2>
 <p>If you encounter and bugs while using <code>prefect-airbyte</code>, feel free to open an issue in the <a href="https://github.com/PrefectHQ/prefect-airbyte">prefect-airbyte</a> repository.</p>
@@ -452,13 +559,13 @@ pip install -e <span class="s2">&quot;.[dev]&quot;</span>
       
       
         
-        <a href="connections/" class="md-footer__link md-footer__link--next" aria-label="Next: Connections" rel="next">
+        <a href="client/" class="md-footer__link md-footer__link--next" aria-label="Next: Client" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Connections
+              Client
             </div>
           </div>
           <div class="md-footer__button md-icon">

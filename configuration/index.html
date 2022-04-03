@@ -13,7 +13,7 @@
     
     
       
-        <title>Connections - prefect-airbyte</title>
+        <title>Configuration - prefect-airbyte</title>
       
     
     
@@ -65,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#prefect_airbyte.connections" class="md-skip">
+        <a href="#prefect_airbyte.configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Connections
+              Configuration
             
           </span>
         </div>
@@ -212,21 +212,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
-        Configuration
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -239,12 +224,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Connections
+          Configuration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Connections
+        Configuration
       </a>
       
         
@@ -263,8 +248,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prefect_airbyte.connections.trigger_sync" class="md-nav__link">
-    trigger_sync()
+  <a href="#prefect_airbyte.configuration.export_configuration" class="md-nav__link">
+    export_configuration()
   </a>
   
 </li>
@@ -273,6 +258,21 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connections/" class="md-nav__link">
+        Connections
+      </a>
     </li>
   
 
@@ -304,8 +304,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prefect_airbyte.connections.trigger_sync" class="md-nav__link">
-    trigger_sync()
+  <a href="#prefect_airbyte.configuration.export_configuration" class="md-nav__link">
+    export_configuration()
   </a>
   
 </li>
@@ -328,8 +328,8 @@
 
 
 
-<h1 id="prefect_airbyte.connections" class="doc doc-heading">
-        <code>prefect_airbyte.connections</code>
+<h1 id="prefect_airbyte.configuration" class="doc doc-heading">
+        <code>prefect_airbyte.configuration</code>
 
 
 
@@ -337,7 +337,7 @@
 
     <div class="doc doc-contents first">
 
-      <p>Tasks for connecting to Airbyte and triggering connection syncs</p>
+      <p>Tasks for updating and fetching Airbyte configurations</p>
 
 
 
@@ -350,18 +350,12 @@
 
 
 
-
-
-
-
-
-
   <div class="doc doc-object doc-function">
 
 
 
-<h2 id="prefect_airbyte.connections.trigger_sync" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">trigger_sync</span><span class="p">(</span><span class="n">airbyte_server_host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s1">&#39;8000&#39;</span><span class="p">,</span> <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="n">connection_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">poll_interval_s</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span></code>
+<h2 id="prefect_airbyte.configuration.export_configuration" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">export_configuration</span><span class="p">(</span><span class="n">airbyte_server_host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s1">&#39;8000&#39;</span><span class="p">,</span> <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s1">&#39;v1&#39;</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -371,16 +365,7 @@
 
     <div class="doc doc-contents ">
 
-      <p>Task run method for triggering an Airbyte Connection.</p>
-<p><em>It is assumed that the user will have previously configured
-a Source &amp; Destination into a Connection.</em>
-e.g. MySql -&gt; CSV</p>
-<p>An invocation of <code>run</code> will attempt to start a sync job for
-the specified <code>connection_id</code> representing the Connection in
-Airbyte.</p>
-<p><code>run</code> will poll Airbyte Server for the Connection status and
-will only complete when the sync has completed or
-when it receives an error status code from an API call.</p>
+      <p>Task that triggers an export of an Airbyte configuration per <code>{AIRBYTE_HOST}/api/v1/deployment/export</code></p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -394,40 +379,25 @@ when it receives an error status code from an API call.</p>
   </thead>
   <tbody>
       <tr>
+        <td><code>airbyte_server_host</code></td>
         <td><code>str</code></td>
-        <td><code>airbyte_server_host </code></td>
         <td><p>Hostname of Airbyte server where connection is
 configured. Will overwrite the value provided at init if provided.</p></td>
-        <td><em>required</em></td>
+        <td><code>&#39;localhost&#39;</code></td>
       </tr>
       <tr>
-        <td><code>str</code></td>
         <td><code>airbyte_server_port</code></td>
+        <td><code>str</code></td>
         <td><p>Port that the Airbyte server is listening on.
 Will overwrite the value provided at init if provided.</p></td>
-        <td><em>required</em></td>
+        <td><code>&#39;8000&#39;</code></td>
       </tr>
       <tr>
-        <td><code>str</code></td>
         <td><code>airbyte_api_version</code></td>
+        <td><code>str</code></td>
         <td><p>Version of Airbyte API to use to trigger connection
 sync. Will overwrite the value provided at init if provided.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>str</code></td>
-        <td><code>connection_id</code></td>
-        <td><p>if provided,
-will overwrite the value provided at init.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>int</code></td>
-        <td><code>poll_interval_s</code></td>
-        <td><p>this task polls the
-Airbyte API for status, if provided this value will
-override the default polling time of 15 seconds.</p></td>
-        <td><em>required</em></td>
+        <td><code>&#39;v1&#39;</code></td>
       </tr>
   </tbody>
 </table>
@@ -441,110 +411,102 @@ override the default polling time of 15 seconds.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>dict</code></td>
-      <td><p>connection_id (str) and succeeded_at (timestamp str)</p></td>
+      <td><code>bytearray</code></td>
+      <td><p>byte array containing Airbyte configuration</p></td>
     </tr>
   </tbody>
 </table>
 <p><strong>Examples:</strong></p>
-    <p>Flow that triggers an Airybte connection sync:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span>
-<span class="kn">from</span> <span class="nn">prefect_airbyte.connections</span> <span class="kn">import</span> <span class="n">trigger_sync</span>
+    <p>Flow that writes the Airbyte configuration as a gzip to a filepath:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gzip</span>
 
+<span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span><span class="p">,</span> <span class="n">task</span>
+<span class="kn">from</span> <span class="nn">prefect_airbyte.configuration</span> <span class="kn">import</span> <span class="n">export_configuration</span>
+
+<span class="nd">@task</span>
+<span class="k">def</span> <span class="nf">zip_and_write_somewhere</span><span class="p">(</span>
+    <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span>
+    <span class="n">somwhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span><span class="s1">&#39;</span>
+<span class="p">):</span>
+    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;my_destination.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_configuration</span><span class="p">)</span>
 
 <span class="nd">@flow</span>
-<span class="k">def</span> <span class="nf">example_trigger_sync_flow</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">example_export_configuration_flow</span><span class="p">():</span>
 
     <span class="c1"># Run other tasks and subflows here</span>
 
-    <span class="n">trigger_sync</span><span class="p">(</span>
-        <span class="n">connection_id</span><span class="o">=</span><span class="s2">&quot;your-connection-id-to-sync&quot;</span>
+    <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">export_configuration</span><span class="p">(</span>
+            <span class="n">airbyte_server_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+            <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s2">&quot;8000&quot;</span><span class="p">,</span>
+            <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="n">zip_and_write_somewhere</span><span class="p">(</span><span class="n">airbyte_config</span><span class="o">=</span><span class="n">airbyte_config</span><span class="p">)</span>
 
 <span class="n">example_trigger_sync_flow</span><span class="p">()</span>
 </code></pre></div>
 
         <details class="quote">
-          <summary>Source code in <code>prefect_airbyte/connections.py</code></summary>
+          <summary>Source code in <code>prefect_airbyte/configuration.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@task</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_sync</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">export_configuration</span><span class="p">(</span>
     <span class="n">airbyte_server_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
     <span class="n">airbyte_server_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="s2">&quot;8000&quot;</span><span class="p">,</span>
     <span class="n">airbyte_api_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v1&quot;</span><span class="p">,</span>
-    <span class="n">connection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">poll_interval_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytearray</span><span class="p">:</span>
+
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Task run method for triggering an Airbyte Connection.</span>
-
-<span class="sd">    *It is assumed that the user will have previously configured</span>
-<span class="sd">    a Source &amp; Destination into a Connection.*</span>
-<span class="sd">    e.g. MySql -&gt; CSV</span>
-
-<span class="sd">    An invocation of `run` will attempt to start a sync job for</span>
-<span class="sd">    the specified `connection_id` representing the Connection in</span>
-<span class="sd">    Airbyte.</span>
-
-<span class="sd">    `run` will poll Airbyte Server for the Connection status and</span>
-<span class="sd">    will only complete when the sync has completed or</span>
-<span class="sd">    when it receives an error status code from an API call.</span>
+<span class="sd">    Task that triggers an export of an Airbyte configuration per `{AIRBYTE_HOST}/api/v1/deployment/export`</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        str airbyte_server_host : Hostname of Airbyte server where connection is</span>
+<span class="sd">        airbyte_server_host (str, optional): Hostname of Airbyte server where connection is</span>
 <span class="sd">            configured. Will overwrite the value provided at init if provided.</span>
-<span class="sd">        str airbyte_server_port: Port that the Airbyte server is listening on.</span>
+<span class="sd">        airbyte_server_port (str, optional): Port that the Airbyte server is listening on.</span>
 <span class="sd">            Will overwrite the value provided at init if provided.</span>
-<span class="sd">        str airbyte_api_version: Version of Airbyte API to use to trigger connection</span>
+<span class="sd">        airbyte_api_version (str, optional): Version of Airbyte API to use to trigger connection</span>
 <span class="sd">            sync. Will overwrite the value provided at init if provided.</span>
-<span class="sd">        str connection_id: if provided,</span>
-<span class="sd">            will overwrite the value provided at init.</span>
-<span class="sd">        int poll_interval_s: this task polls the</span>
-<span class="sd">            Airbyte API for status, if provided this value will</span>
-<span class="sd">            override the default polling time of 15 seconds.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: connection_id (str) and succeeded_at (timestamp str)</span>
+<span class="sd">        bytearray: byte array containing Airbyte configuration</span>
 
 <span class="sd">    Examples:</span>
 
-<span class="sd">        Flow that triggers an Airybte connection sync:</span>
+<span class="sd">        Flow that writes the Airbyte configuration as a gzip to a filepath:</span>
 
 <span class="sd">        ```python</span>
-<span class="sd">        from prefect import flow</span>
-<span class="sd">        from prefect_airbyte.connections import trigger_sync</span>
+<span class="sd">        import gzip</span>
 
+<span class="sd">        from prefect import flow, task</span>
+<span class="sd">        from prefect_airbyte.configuration import export_configuration</span>
+
+<span class="sd">        @task</span>
+<span class="sd">        def zip_and_write_somewhere(</span>
+<span class="sd">            airbyte_config: bytearray</span>
+<span class="sd">            somwhere: str = &#39;my_destination.gz&#39;,&#39;</span>
+<span class="sd">        ):</span>
+<span class="sd">            with gzip.open(&#39;my_destination.gz&#39;, &#39;wb&#39;) as f:</span>
+<span class="sd">                    f.write(airbyte_configuration)</span>
 
 <span class="sd">        @flow</span>
-<span class="sd">        def example_trigger_sync_flow():</span>
+<span class="sd">        def example_export_configuration_flow():</span>
 
 <span class="sd">            # Run other tasks and subflows here</span>
 
-<span class="sd">            trigger_sync(</span>
-<span class="sd">                connection_id=&quot;your-connection-id-to-sync&quot;</span>
+<span class="sd">            airbyte_config = export_configuration(</span>
+<span class="sd">                    airbyte_server_host=&quot;localhost&quot;,</span>
+<span class="sd">                    airbyte_server_port=&quot;8000&quot;,</span>
+<span class="sd">                    airbyte_api_version=&quot;v1&quot;,</span>
 <span class="sd">            )</span>
+
+<span class="sd">            zip_and_write_somewhere(airbyte_config=airbyte_config)</span>
 
 <span class="sd">        example_trigger_sync_flow()</span>
 <span class="sd">        ```</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_id</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Value for parameter `connection_id` *must* </span><span class="se">\</span>
-<span class="s2">        be provided.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">connection_id</span><span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Parameter `connection_id` *must* be a valid UUID </span><span class="se">\</span>
-<span class="s2">            i.e. 32 hex characters, including hyphens.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="c1"># see https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com</span>
-    <span class="c1"># /rapidoc-api-docs.html#overview</span>
     <span class="n">airbyte_base_url</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">airbyte_server_host</span><span class="si">}</span><span class="s2">:&quot;</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">airbyte_server_port</span><span class="si">}</span><span class="s2">/api/</span><span class="si">{</span><span class="n">airbyte_api_version</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -553,54 +515,10 @@ override the default polling time of 15 seconds.</p></td>
     <span class="n">airbyte</span> <span class="o">=</span> <span class="n">AirbyteClient</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">airbyte_base_url</span><span class="p">)</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">establish_session</span><span class="p">()</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Getting Airbyte Connection </span><span class="si">{</span><span class="n">connection_id</span><span class="si">}</span><span class="s2">, poll interval &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">poll_interval_s</span><span class="si">}</span><span class="s2"> seconds, airbyte_base_url </span><span class="si">{</span><span class="n">airbyte_base_url</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initiating export of Airbyte configuration&quot;</span><span class="p">)</span>
+    <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">export_configuration</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
-    <span class="n">connection_status</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">get_connection_status</span><span class="p">(</span>
-        <span class="n">session</span><span class="p">,</span> <span class="n">airbyte_base_url</span><span class="p">,</span> <span class="n">connection_id</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">connection_status</span> <span class="o">==</span> <span class="n">CONNECTION_STATUS_ACTIVE</span><span class="p">:</span>
-        <span class="c1"># Trigger manual sync on the Connection ...</span>
-        <span class="n">job_id</span><span class="p">,</span> <span class="n">job_created_at</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">trigger_manual_sync_connection</span><span class="p">(</span>
-            <span class="n">session</span><span class="p">,</span> <span class="n">airbyte_base_url</span><span class="p">,</span> <span class="n">connection_id</span>
-        <span class="p">)</span>
-
-        <span class="n">job_status</span> <span class="o">=</span> <span class="n">JOB_STATUS_PENDING</span>
-
-        <span class="k">while</span> <span class="n">job_status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">JOB_STATUS_FAILED</span><span class="p">,</span> <span class="n">JOB_STATUS_SUCCEEDED</span><span class="p">]:</span>
-            <span class="n">job_status</span><span class="p">,</span> <span class="n">job_created_at</span><span class="p">,</span> <span class="n">job_updated_at</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span>
-                <span class="n">session</span><span class="p">,</span> <span class="n">airbyte_base_url</span><span class="p">,</span> <span class="n">job_id</span>
-            <span class="p">)</span>
-
-            <span class="c1"># pending┃running┃incomplete┃failed┃succeeded┃cancelled</span>
-            <span class="k">if</span> <span class="n">job_status</span> <span class="o">==</span> <span class="n">JOB_STATUS_SUCCEEDED</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> succeeded.&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">job_status</span> <span class="o">==</span> <span class="n">JOB_STATUS_FAILED</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> failed.&quot;</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="o">.</span><span class="n">AirbyteSyncJobFailed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> failed.&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># wait for next poll interval</span>
-                <span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval_s</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;connection_id&quot;</span><span class="p">:</span> <span class="n">connection_id</span><span class="p">,</span>
-            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">connection_status</span><span class="p">,</span>
-            <span class="s2">&quot;job_status&quot;</span><span class="p">:</span> <span class="n">job_status</span><span class="p">,</span>
-            <span class="s2">&quot;job_created_at&quot;</span><span class="p">:</span> <span class="n">job_created_at</span><span class="p">,</span>
-            <span class="s2">&quot;job_updated_at&quot;</span><span class="p">:</span> <span class="n">job_updated_at</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="k">elif</span> <span class="n">connection_status</span> <span class="o">==</span> <span class="n">CONNECTION_STATUS_INACTIVE</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Please enable the Connection </span><span class="si">{</span><span class="n">connection_id</span><span class="si">}</span><span class="s2"> in Airbyte Server.&quot;</span>
-        <span class="p">)</span>
-        <span class="k">raise</span> <span class="n">err</span><span class="o">.</span><span class="n">AirbyteServerNotHealthyException</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Please enable the Connection </span><span class="si">{</span><span class="n">connection_id</span><span class="si">}</span><span class="s2"> in Airbyte Server.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">connection_status</span> <span class="o">==</span> <span class="n">CONNECTION_STATUS_DEPRECATED</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection </span><span class="si">{</span><span class="n">connection_id</span><span class="si">}</span><span class="s2"> is deprecated.&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="n">err</span><span class="o">.</span><span class="n">AirbyteServerNotHealthyException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection </span><span class="si">{</span><span class="n">connection_id</span><span class="si">}</span><span class="s2"> is deprecated.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">airbyte_config</span>
 </code></pre></div>
         </details>
     </div>
@@ -630,7 +548,7 @@ override the default polling time of 15 seconds.</p></td>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuration" rel="prev">
+        <a href="../client/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Client" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -639,11 +557,26 @@ override the default polling time of 15 seconds.</p></td>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Configuration
+              Client
             </div>
           </div>
         </a>
       
+      
+        
+        <a href="../connections/" class="md-footer__link md-footer__link--next" aria-label="Next: Connections" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Connections
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
       
     </nav>
   
