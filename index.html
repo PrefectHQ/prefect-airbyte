@@ -532,26 +532,30 @@
 
 <span class="nd">@task</span>
 <span class="k">def</span> <span class="nf">zip_and_write_somewhere</span><span class="p">(</span>
-      <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span>
+      <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span><span class="p">,</span>
       <span class="n">somewhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;*://**/my_destination.gz&#39;</span><span class="p">,</span>
 <span class="p">):</span>
-      <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">somewhere</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_configuration</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">somewhere</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_config</span><span class="p">)</span>
 
 <span class="nd">@flow</span>
-<span class="k">def</span> <span class="nf">example_export_configuration_flow</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">example_export_configuration_flow</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
-      <span class="c1"># Run other tasks and subflows here</span>
+    <span class="c1"># Run other tasks and subflows here</span>
 
-      <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">export_configuration</span><span class="p">(</span>
-            <span class="n">airbyte_server_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-            <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s2">&quot;8000&quot;</span><span class="p">,</span>
-            <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
-      <span class="p">)</span>
+    <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">export_configuration</span><span class="p">(</span>
+        <span class="n">airbyte_server_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">airbyte_server_port</span><span class="o">=</span><span class="s2">&quot;8000&quot;</span><span class="p">,</span>
+        <span class="n">airbyte_api_version</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
-      <span class="n">zip_and_write_somewhere</span><span class="p">(</span><span class="n">airbyte_config</span><span class="o">=</span><span class="n">airbyte_config</span><span class="p">)</span>
+    <span class="n">zip_and_write_somewhere</span><span class="p">(</span>
+        <span class="n">somewhere</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span>
+        <span class="n">airbyte_config</span><span class="o">=</span><span class="n">airbyte_config</span>
+    <span class="p">)</span>
 
-<span class="n">example_trigger_sync_flow</span><span class="p">()</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">example_export_configuration_flow</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="resources">Resources</h2>
 <p>If you encounter and bugs while using <code>prefect-airbyte</code>, feel free to open an issue in the <a href="https://github.com/PrefectHQ/prefect-airbyte">prefect-airbyte</a> repository.</p>

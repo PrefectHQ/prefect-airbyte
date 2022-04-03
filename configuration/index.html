@@ -516,7 +516,10 @@ sync. Will overwrite the value provided at init if provided.</p></td>
     <span class="n">session</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">establish_session</span><span class="p">()</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initiating export of Airbyte configuration&quot;</span><span class="p">)</span>
-    <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">export_configuration</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+    <span class="n">airbyte_config</span> <span class="o">=</span> <span class="n">airbyte</span><span class="o">.</span><span class="n">export_configuration</span><span class="p">(</span>
+        <span class="n">airbyte_base_url</span><span class="o">=</span><span class="n">airbyte_base_url</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">airbyte_config</span>
 </code></pre></div>
