@@ -490,9 +490,9 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
             <span class="k">raise</span> <span class="n">err</span><span class="o">.</span><span class="n">AirbyteServerNotHealthyException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">export_configuration</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">airbyte_base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytearray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Trigger an export of Airbyte configuration &amp;mdash; [see the airbyte docs for `/v1/deployment/export`](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/deployment/export).</span>
@@ -510,7 +510,7 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">get_connection_url</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Export configuration response: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Export configuration response: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
                 <span class="n">export_config</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
                 <span class="k">return</span> <span class="n">export_config</span>
         <span class="k">except</span> <span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -606,7 +606,7 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
 
 
 <h3 id="prefect_airbyte.client.AirbyteClient.export_configuration" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">export_configuration</span><span class="p">(</span><span class="n">airbyte_base_url</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">export_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">airbyte_base_url</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span></code>
 
 
 </h3>
@@ -640,7 +640,7 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
       </tr>
       <tr>
         <td><code>logger</code></td>
-        <td><code>Logger</code></td>
+        <td></td>
         <td><p>task logger</p></td>
         <td><em>required</em></td>
       </tr>
@@ -666,9 +666,9 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
         <details class="quote">
           <summary>Source code in <code>prefect_airbyte/client.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">export_configuration</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
     <span class="n">airbyte_base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytearray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trigger an export of Airbyte configuration &amp;mdash; [see the airbyte docs for `/v1/deployment/export`](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/deployment/export).</span>
@@ -686,7 +686,7 @@ For more information refer to the <a href="https://docs.airbyte.io/api-documenta
     <span class="k">try</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">get_connection_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Export configuration response: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Export configuration response: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
             <span class="n">export_config</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
             <span class="k">return</span> <span class="n">export_config</span>
     <span class="k">except</span> <span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

@@ -219,7 +219,7 @@
       
         <li class="md-nav__item">
   <a href="#welcome" class="md-nav__link">
-    Welcome! &emsp; 
+    Welcome!
   </a>
   
 </li>
@@ -380,7 +380,7 @@
       
         <li class="md-nav__item">
   <a href="#welcome" class="md-nav__link">
-    Welcome! &emsp; 
+    Welcome!
   </a>
   
 </li>
@@ -475,7 +475,9 @@
 
 
 <h1 id="prefect-airbyte">prefect-airbyte</h1>
-<h2 id="welcome">Welcome! &emsp; <img src="imgs/airbyte.png" width="40" height="55" /></h2>
+<h2 id="welcome">Welcome!</h2>
+<!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
+
 <p><code>prefect-airbyte</code> is a collections of prebuilt Prefect tasks that can be used to quickly construct Prefect flows.</p>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="python-setup">Python setup</h3>
@@ -531,7 +533,7 @@
 <span class="nd">@task</span>
 <span class="k">def</span> <span class="nf">zip_and_write_somewhere</span><span class="p">(</span>
       <span class="n">airbyte_config</span><span class="p">:</span> <span class="nb">bytearray</span>
-      <span class="n">somewhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;**/my_destination.gz&#39;</span><span class="p">,</span><span class="s1">&#39;</span>
+      <span class="n">somewhere</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;*://**/my_destination.gz&#39;</span><span class="p">,</span>
 <span class="p">):</span>
       <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">somewhere</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">airbyte_configuration</span><span class="p">)</span>
