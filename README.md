@@ -23,7 +23,7 @@ pip install prefect-airbyte
 ```
 
 ### Airbyte setup
-See [the airbyte documention]() on how to get your own instance.
+See [the airbyte documention](https://docs.airbyte.com/deploying-airbyte) on how to get your own instance.
 
 
 ### Examples
