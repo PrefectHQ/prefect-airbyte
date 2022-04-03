@@ -1,17 +1,17 @@
-from client import AirbyteClient
+from connections import AirbyteClient
 
 from prefect import task
 from prefect.logging.loggers import get_logger
 
 @task
-async def AirbyteConfigurationExport(
+async def configuration_export(
         airbyte_server_host: str = "localhost",
         airbyte_server_port: int = None,
         airbyte_api_version: str = None,
     ) -> bytearray:
     
         """
-        Task run method for triggering an export of an Airbyte configuration
+        Task run method triggering an export of an Airbyte configuration
 
         Args:
             - airbyte_server_host (str, optional): Hostname of Airbyte server where connection is

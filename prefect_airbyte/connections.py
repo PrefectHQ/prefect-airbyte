@@ -104,7 +104,7 @@ class AirbyteClient:
                 return export_config
         except RequestException as e:
             raise AirbyteExportConfigurationFailed(e)
-
+        
 def get_connection_status(logger, session, airbyte_base_url, connection_id):
     get_connection_url = airbyte_base_url + "/connections/get/"
 
