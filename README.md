@@ -51,7 +51,7 @@ example_trigger_sync_flow()
 ```console
 
 ❯ python airbyte_syncs.py
-03:46:03 | prefect.engine - Created flow run 'thick-seahorse' for flow 'orchestrate-airbyte'
+03:46:03 | prefect.engine - Created flow run 'thick-seahorse' for flow 'example_trigger_sync_flow'
 03:46:03 | Flow run 'thick-seahorse' - Using task runner 'ConcurrentTaskRunner'
 03:46:03 | Flow run 'thick-seahorse' - Created task run 'trigger_sync-35f0e9c2-0' for task 'trigger_sync'
 03:46:03 | prefect - trigger airbyte connection: e1b2078f-882a-4f50-9942-cfe34b2d825b, poll interval 3 seconds
