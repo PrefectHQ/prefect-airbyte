@@ -36,6 +36,7 @@ plugins:
 
 nav:
     - Home: index.md
-    - Tasks: tasks.md
-    - Flows: flows.md
+    - Client: client.md
+    - Configuration: configuration.md
+    - Connections: connections.md
 
