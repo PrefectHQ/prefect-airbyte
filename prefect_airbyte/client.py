@@ -1,9 +1,10 @@
-"""Client for interacting with Airbyte instance"""
+"""Client for interacting with Airbyte instances"""
 
-import logging, requests
+import requests
 from requests import RequestException
 
 from prefect_airbyte import exceptions as err
+
 
 class AirbyteClient:
     """
@@ -14,7 +15,7 @@ class AirbyteClient:
     Airbyte Open-Source you don't need the API Token for
     Authentication! All endpoints are possible to access using the
     API without it."
-    For more information refer to the [Airbyte docs](https://docs.airbyte.io/api-documentation).
+    For more info, see the: [Airbyte docs](https://docs.airbyte.io/api-documentation).
 
     Args:
         airbyte_base_url str: base api endpoint url for airbyte
@@ -24,15 +25,45 @@ class AirbyteClient:
     """
 
     def __init__(self, logger, airbyte_base_url: str = "http://localhost:8000/api/v1"):
+        """
+        AirbyteClient constructor
+
+        Args:
+            self: AirbyteClient object
+            logger: a logger for the client use, like prefect.logging.loggers.get_logger
+            airbyte_base_url: full API endpoint, assumes `http://localhost:8000/api/v1`
+
+        Returns:
+            - AirbyteClient: an instance of the AirbyteClient class
+        """
         self.airbyte_base_url = airbyte_base_url
         self.logger = logger
 
     def establish_session(self):
+        """
+        AirbyteClient method to check_health_status and return a session
+
+        Args:
+            self
+
+        Returns:
+            - session: requests.Session used to communicate with the Airbyte API
+        """
         session = requests.Session()
         if self.check_health_status(session):
             return session
 
-    def check_health_status(self, session):
+    def check_health_status(self, session: requests.Session):
+        """
+        Check the health status of an AirbyteInstance
+
+        Args:
+            self: AirbyteClient
+            session: requests.Session used to interact with the Airbyte API
+
+        Returns:
+            - bool representing whether the server is healthy
+        """
         get_connection_url = self.airbyte_base_url + "/health/"
         try:
             response = session.get(get_connection_url)
@@ -53,7 +84,7 @@ class AirbyteClient:
         session: requests.Session,
     ) -> bytearray:
         """
-        Trigger an export of Airbyte configuration &mdash; [see the airbyte docs for `/v1/deployment/export`](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/deployment/export).
+        Trigger an export of Airbyte configuration
 
         Args:
             airbyte_base_url: URL of Airbyte server.
@@ -73,11 +104,25 @@ class AirbyteClient:
                 return export_config
         except RequestException as e:
             raise err.AirbyteExportConfigurationFailed(e)
-        
+
     def get_connection_status(self, session, airbyte_base_url, connection_id):
+        """
+        Get the status of a defined Airbyte connection
+
+        Args:
+            session: requests session with which to make call to the Airbyte server
+            airbyte_base_url: URL of Airbyte server.
+            connection_id: string value of the defined airbyte connection
+
+            str: airbyte connection status
+
+        Returns:
+            - byte array of Airbyte configuration data
+        """
+
         get_connection_url = airbyte_base_url + "/connections/get/"
 
-        # TODO - Missing authentication because Airbyte servers currently do not support authentication
+        # TODO - Missing auth because Airbyte API currently doesn't yet support auth
         try:
             response = session.post(
                 get_connection_url, json={"connectionId": connection_id}
@@ -90,10 +135,9 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-
     def trigger_manual_sync_connection(self, session, airbyte_base_url, connection_id):
         """
-        Trigger a manual sync of the Connection &mdash; [see the airbyte docs for /v1/connections/sync](https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/connections/sync).
+        Trigger a manual sync of the Connection
 
         Args:
             session: requests session with which to make call to Airbyte server
@@ -128,6 +172,18 @@ class AirbyteClient:
             raise err.AirbyteServerNotHealthyException(e)
 
     def get_job_status(self, session, airbyte_base_url, job_id):
+        """
+        Get the status of an Airbyte connection sync job
+
+        Args:
+            self: AirbyteClient object
+            session: requests session with which to make call to the Airbyte server
+            airbyte_base_url: URL of Airbyte server.
+            job_id: str value of the airbyte job id as defined by airbyte
+
+        Returns:
+            - byte array of Airbyte configuration data
+        """
         get_connection_url = airbyte_base_url + "/jobs/get/"
         try:
             response = session.post(get_connection_url, json={"id": job_id})
