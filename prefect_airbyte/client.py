@@ -1,5 +1,8 @@
 """Client for interacting with Airbyte instances"""
 
+import logging
+from typing import Tuple
+
 import requests
 from requests import RequestException
 
@@ -24,30 +27,34 @@ class AirbyteClient:
         AirbyteClient: an instance of AirbyteClient
     """
 
-    def __init__(self, logger, airbyte_base_url: str = "http://localhost:8000/api/v1"):
+    def __init__(
+        self,
+        logger: logging.Logger,
+        airbyte_base_url: str = "http://localhost:8000/api/v1",
+    ) -> None:
         """
-        AirbyteClient constructor
+        `AirbyteClient` constructor
 
         Args:
-            self: AirbyteClient object
-            logger: a logger for the client use, like prefect.logging.loggers.get_logger
+            self AirbyteClient: `AirbyteClient` object
+            logger: for client use, e.g. `prefect.logging.loggers.get_logger`
             airbyte_base_url: full API endpoint, assumes `http://localhost:8000/api/v1`
 
         Returns:
-            - AirbyteClient: an instance of the AirbyteClient class
+            AirbyteClient: an instance of the `AirbyteClient` class
         """
         self.airbyte_base_url = airbyte_base_url
         self.logger = logger
 
-    def establish_session(self):
+    def establish_session(self) -> requests.Session:
         """
-        AirbyteClient method to check_health_status and return a session
+        AirbyteClient method to `check_health_status` and establish a `session`
 
         Args:
-            self
+            self AirbyteClient: the `AirbyteClient` object
 
         Returns:
-            - session: requests.Session used to communicate with the Airbyte API
+            session: `requests.Session` used to communicate with the Airbyte API
         """
         session = requests.Session()
         if self.check_health_status(session):
@@ -58,11 +65,11 @@ class AirbyteClient:
         Check the health status of an AirbyteInstance
 
         Args:
-            self: AirbyteClient
-            session: requests.Session used to interact with the Airbyte API
+            self AirbyteClient: the `AirbyteClient` object
+            session: `requests.Session` instance used to interact with the Airbyte API
 
         Returns:
-            - bool representing whether the server is healthy
+            bool: representing whether the server is healthy
         """
         get_connection_url = self.airbyte_base_url + "/health/"
         try:
@@ -89,10 +96,9 @@ class AirbyteClient:
         Args:
             airbyte_base_url: URL of Airbyte server.
             session: requests session with which to make call to the Airbyte server
-            logger: task logger
 
         Returns:
-            - byte array of Airbyte configuration data
+            byte array of Airbyte configuration data
         """
         get_connection_url = airbyte_base_url + "/deployment/export/"
 
@@ -105,7 +111,9 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteExportConfigurationFailed(e)
 
-    def get_connection_status(self, session, airbyte_base_url, connection_id):
+    def get_connection_status(
+        self, session: requests.Session, airbyte_base_url: str, connection_id: str
+    ) -> str:
         """
         Get the status of a defined Airbyte connection
 
@@ -114,10 +122,8 @@ class AirbyteClient:
             airbyte_base_url: URL of Airbyte server.
             connection_id: string value of the defined airbyte connection
 
-            str: airbyte connection status
-
         Returns:
-            - byte array of Airbyte configuration data
+            str: the status of a defined Airbyte connection
         """
 
         get_connection_url = airbyte_base_url + "/connections/get/"
@@ -135,7 +141,9 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-    def trigger_manual_sync_connection(self, session, airbyte_base_url, connection_id):
+    def trigger_manual_sync_connection(
+        self, session: requests.Session, airbyte_base_url: str, connection_id: str
+    ) -> Tuple[str, str]:
         """
         Trigger a manual sync of the Connection
 
@@ -171,18 +179,20 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-    def get_job_status(self, session, airbyte_base_url, job_id):
+    def get_job_status(
+        self, session: requests.Session, airbyte_base_url: str, job_id: str
+    ) -> str:
         """
         Get the status of an Airbyte connection sync job
 
         Args:
-            self: AirbyteClient object
+            self AirbyteClient: the `AirbyteClient` object
             session: requests session with which to make call to the Airbyte server
             airbyte_base_url: URL of Airbyte server.
             job_id: str value of the airbyte job id as defined by airbyte
 
         Returns:
-            - byte array of Airbyte configuration data
+            byte array of Airbyte configuration data
         """
         get_connection_url = airbyte_base_url + "/jobs/get/"
         try:
