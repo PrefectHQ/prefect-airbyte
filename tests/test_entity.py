@@ -1,4 +1,2 @@
-from itertools import product
-
-import pytest
-from prefect import flow
+def test_test_assert():
+    assert True
