@@ -4,8 +4,8 @@
   "checkout": null,
   "context": {
     "cookiecutter": {
-      "full_name": "Nathan Nowack",
-      "email": "nate@prefect.io",
+      "full_name": "Prefect Technologies, Inc.",
+      "email": "help@prefect.io",
       "github_organization": "PrefectHQ",
       "collection_name": "prefect-airbyte",
       "collection_slug": "prefect_airbyte",
