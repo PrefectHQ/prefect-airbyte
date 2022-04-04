@@ -1,0 +1,2 @@
+include versioneer.py
+include prefect_airbyte/_version.py
