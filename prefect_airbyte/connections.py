@@ -1,11 +1,12 @@
 """Tasks for connecting to Airbyte and triggering connection syncs"""
-from time import sleep
 import uuid
+from time import sleep
 
 from prefect import task
 from prefect.logging.loggers import get_logger
-from prefect_airbyte.client import AirbyteClient
+
 from prefect_airbyte import exceptions as err
+from prefect_airbyte.client import AirbyteClient
 
 # Connection statuses
 CONNECTION_STATUS_ACTIVE = "active"
@@ -17,6 +18,7 @@ JOB_STATUS_SUCCEEDED = "succeeded"
 JOB_STATUS_FAILED = "failed"
 JOB_STATUS_PENDING = "pending"
 
+
 @task
 async def trigger_sync(
     airbyte_server_host: str = "localhost",
@@ -24,7 +26,7 @@ async def trigger_sync(
     airbyte_api_version: str = "v1",
     connection_id: str = None,
     poll_interval_s: int = 15,
-    status_updates: bool = False
+    status_updates: bool = False,
 ) -> dict:
     """
     Task run method for triggering an Airbyte Connection.
@@ -57,11 +59,11 @@ async def trigger_sync(
 
     Returns:
         dict: connection_id (str) and succeeded_at (timestamp str)
-        
+
     Examples:
-    
+
         Flow that triggers an Airybte connection sync:
-        
+
         ```python
         from prefect import flow
         from prefect_airbyte.connections import trigger_sync
@@ -78,7 +80,7 @@ async def trigger_sync(
 
         example_trigger_sync_flow()
         ```
-        
+
     """
     logger = get_logger()
 
@@ -134,7 +136,8 @@ async def trigger_sync(
                 logger.error(f"Job {job_id} failed.")
                 raise err.AirbyteSyncJobFailed(f"Job {job_id} failed.")
             else:
-                if status_updates: logger.info(job_status)
+                if status_updates:
+                    logger.info(job_status)
                 # wait for next poll interval
                 sleep(poll_interval_s)
 
@@ -146,12 +149,12 @@ async def trigger_sync(
             "job_updated_at": job_updated_at,
         }
     elif connection_status == CONNECTION_STATUS_INACTIVE:
-        logger.error(
-            f"Please enable the Connection {connection_id} in Airbyte Server."
-        )
+        logger.error(f"Please enable the Connection {connection_id} in Airbyte Server.")
         raise err.AirbyteServerNotHealthyException(
             f"Please enable the Connection {connection_id} in Airbyte Server."
         )
     elif connection_status == CONNECTION_STATUS_DEPRECATED:
         logger.error(f"Connection {connection_id} is deprecated.")
-        raise err.AirbyteServerNotHealthyException(f"Connection {connection_id} is deprecated.")
+        raise err.AirbyteServerNotHealthyException(
+            f"Connection {connection_id} is deprecated."
+        )
