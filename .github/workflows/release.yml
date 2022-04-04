@@ -5,10 +5,6 @@ on:
     tags:
       - "v*"
 
-<<<<<<< HEAD
-
-=======
->>>>>>> cruft
 jobs:
   build-release:
     name: Build Release
@@ -25,28 +21,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip build
           python -m pip install --upgrade --upgrade-strategy eager -e .[dev]
-<<<<<<< HEAD
-      - name: Build a binary wheel and a source tarball
-        run: |
-          python -m build --sdist --wheel --outdir dist/
-=======
 
       - name: Build a binary wheel and a source tarball
         run: |
           python -m build --sdist --wheel --outdir dist/
 
->>>>>>> cruft
       - name: Publish build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: built-package
           path: "./dist"
 
-<<<<<<< HEAD
-  build-and-publish-docs:
-    name: Build and publish docs
-    needs: [build-release]
-=======
   publish-release:
     name: Publish release to PyPI
     needs: [build-release]
@@ -69,7 +54,6 @@ jobs:
   build-and-publish-docs:
     name: Build and publish docs
     needs: [build-release, publish-release]
->>>>>>> cruft
     runs-on: ubuntu-latest
 
     steps:
@@ -80,34 +64,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade --upgrade-strategy eager -e .[dev]
           mkdocs build
-<<<<<<< HEAD
-=======
-
->>>>>>> cruft
       - name: Publish docs
         uses: JamesIves/github-pages-deploy-action@v4.2.5
         with:
           branch: docs
           folder: site
-<<<<<<< HEAD
-
-  publish-release:
-    name: Publish release to PyPI
-    needs: [build-release]
-    environment: "prod"
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: built-package
-          path: './dist'
-
-      - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          verbose: true
-=======
->>>>>>> cruft
