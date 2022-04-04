@@ -1,0 +1,20 @@
+{
+  "template": "https://github.com/PrefectHQ/prefect-collection-template",
+  "commit": "8cbce0373595b095876948479aacae3ac1deccb9",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Nathan Nowack",
+      "email": "nate@prefect.io",
+      "github_organization": "PrefectHQ",
+      "collection_name": "prefect-airbyte",
+      "collection_slug": "prefect_airbyte",
+      "collection_short_description": "prefect-airbyte contains tasks for interacting with Airbyte instances",
+      "_copy_without_render": [
+        ".github/workflows/*.yml"
+      ],
+      "_template": "https://github.com/PrefectHQ/prefect-collection-template"
+    }
+  },
+  "directory": null
+}

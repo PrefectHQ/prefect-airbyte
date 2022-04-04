@@ -13,7 +13,7 @@ with open("README.md") as readme_file:
 
 setup(
     name="prefect-airbyte",
-    description="Prefect tasks and subflows for interacting with Airbyte",
+    description="prefect-airbyte contains tasks for interacting with Airbyte instances",
     license="Apache License 2.0",
     author="Prefect Technologies, Inc.",
     author_email="help@prefect.io",
