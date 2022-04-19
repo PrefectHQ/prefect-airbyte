@@ -1,9 +1,9 @@
-"""Client for interacting with Airbyte instances"""
+"""Client for interacting with Airbyte instance"""
 
 import logging
 from typing import Tuple
 
-import requests
+import httpx
 from requests import RequestException
 
 from prefect_airbyte import exceptions as err
@@ -11,8 +11,8 @@ from prefect_airbyte import exceptions as err
 
 class AirbyteClient:
     """
-    Esablishes a session with an Airbyte instance and evaluates its current health
-    status.
+    Esablishes a client session with an Airbyte instance and evaluates its current
+    health status.
 
     This client assumes that you're using Airbyte Open-Source, since "For
     Airbyte Open-Source you don't need the API Token for
@@ -46,34 +46,34 @@ class AirbyteClient:
         self.airbyte_base_url = airbyte_base_url
         self.logger = logger
 
-    def establish_session(self) -> requests.Session:
+    async def establish_session(self) -> httpx.AsyncClient:
         """
-        AirbyteClient method to `check_health_status` and establish a `session`
+        AirbyteClient method to `check_health_status` and establish a `client` session
 
         Args:
             self AirbyteClient: the `AirbyteClient` object
 
         Returns:
-            session: `requests.Session` used to communicate with the Airbyte API
+            client: `httpx.AsyncClient` used to communicate with the Airbyte API
         """
-        session = requests.Session()
-        if self.check_health_status(session):
-            return session
+        client = httpx.AsyncClient()
+        if await self.check_health_status(client):
+            return client
 
-    def check_health_status(self, session: requests.Session):
+    async def check_health_status(self, client: httpx.AsyncClient):
         """
         Check the health status of an AirbyteInstance
 
         Args:
             self AirbyteClient: the `AirbyteClient` object
-            session: `requests.Session` instance used to interact with the Airbyte API
+            client: `httpx.AsyncClient` instance used to interact with the Airbyte API
 
         Returns:
             bool: representing whether the server is healthy
         """
         get_connection_url = self.airbyte_base_url + "/health/"
         try:
-            response = session.get(get_connection_url)
+            response = await client.get(get_connection_url)
             self.logger.debug("Health check response: %s", response.json())
             key = "available" if "available" in response.json() else "db"
             health_status = response.json()[key]
@@ -85,17 +85,17 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-    def export_configuration(
+    async def export_configuration(
         self,
         airbyte_base_url: str,
-        session: requests.Session,
+        client: httpx.AsyncClient,
     ) -> bytearray:
         """
         Trigger an export of Airbyte configuration
 
         Args:
             airbyte_base_url: URL of Airbyte server.
-            session: requests session with which to make call to the Airbyte server
+            client: httpx client with which to make call to the Airbyte server
 
         Returns:
             byte array of Airbyte configuration data
@@ -103,7 +103,7 @@ class AirbyteClient:
         get_connection_url = airbyte_base_url + "/deployment/export/"
 
         try:
-            response = session.post(get_connection_url)
+            response = await client.post(get_connection_url)
             if response.status_code == 200:
                 self.logger.debug("Export configuration response: %s", response)
                 export_config = response.content
@@ -111,14 +111,14 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteExportConfigurationFailed(e)
 
-    def get_connection_status(
-        self, session: requests.Session, airbyte_base_url: str, connection_id: str
+    async def get_connection_status(
+        self, client: httpx.AsyncClient, airbyte_base_url: str, connection_id: str
     ) -> str:
         """
         Get the status of a defined Airbyte connection
 
         Args:
-            session: requests session with which to make call to the Airbyte server
+            client: httpx async client with which to make call to the Airbyte server
             airbyte_base_url: URL of Airbyte server.
             connection_id: string value of the defined airbyte connection
 
@@ -130,7 +130,7 @@ class AirbyteClient:
 
         # TODO - Missing auth because Airbyte API currently doesn't yet support auth
         try:
-            response = session.post(
+            response = await client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
 
@@ -141,14 +141,14 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-    def trigger_manual_sync_connection(
-        self, session: requests.Session, airbyte_base_url: str, connection_id: str
+    async def trigger_manual_sync_connection(
+        self, client: httpx.AsyncClient, airbyte_base_url: str, connection_id: str
     ) -> Tuple[str, str]:
         """
         Trigger a manual sync of the Connection
 
         Args:
-            session: requests session with which to make call to Airbyte server
+            client: httpx client with which to make call to Airbyte server
             airbyte_base_url: URL of Airbyte server
             connection_id: ID of connection to sync
 
@@ -157,9 +157,9 @@ class AirbyteClient:
         """
         get_connection_url = airbyte_base_url + "/connections/sync/"
 
-        # TODO - missing authentication ...
+        # TODO - no current authentication methods from Airbyte
         try:
-            response = session.post(
+            response = await client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
             if response.status_code == 200:
@@ -179,15 +179,15 @@ class AirbyteClient:
         except RequestException as e:
             raise err.AirbyteServerNotHealthyException(e)
 
-    def get_job_status(
-        self, session: requests.Session, airbyte_base_url: str, job_id: str
+    async def get_job_status(
+        self, client: httpx.AsyncClient, airbyte_base_url: str, job_id: str
     ) -> str:
         """
         Get the status of an Airbyte connection sync job
 
         Args:
             self AirbyteClient: the `AirbyteClient` object
-            session: requests session with which to make call to the Airbyte server
+            client: httpx client with which to make call to the Airbyte server
             airbyte_base_url: URL of Airbyte server.
             job_id: str value of the airbyte job id as defined by airbyte
 
@@ -196,7 +196,7 @@ class AirbyteClient:
         """
         get_connection_url = airbyte_base_url + "/jobs/get/"
         try:
-            response = session.post(get_connection_url, json={"id": job_id})
+            response = await client.post(get_connection_url, json={"id": job_id})
             if response.status_code == 200:
                 job_status = response.json()["job"]["status"]
                 job_created_at = response.json()["job"]["createdAt"]

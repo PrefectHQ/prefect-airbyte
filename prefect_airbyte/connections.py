@@ -35,11 +35,11 @@ async def trigger_sync(
     a Source & Destination into a Connection.*
     e.g. MySql -> CSV
 
-    An invocation of `run` will attempt to start a sync job for
+    An invocation of `trigger_sync` will attempt to start a sync job for
     the specified `connection_id` representing the Connection in
     Airbyte.
 
-    `run` will poll Airbyte Server for the Connection status and
+    `trigger_sync` will poll Airbyte Server for the Connection status and
     will only complete when the sync has completed or
     when it receives an error status code from an API call.
 
@@ -106,26 +106,26 @@ async def trigger_sync(
     )
 
     airbyte = AirbyteClient(logger, airbyte_base_url)
-    session = airbyte.establish_session()
+    session = await airbyte.establish_session()
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
         f"{poll_interval_s} seconds, airbyte_base_url {airbyte_base_url}"
     )
 
-    connection_status = airbyte.get_connection_status(
+    connection_status = await airbyte.get_connection_status(
         session, airbyte_base_url, connection_id
     )
     if connection_status == CONNECTION_STATUS_ACTIVE:
         # Trigger manual sync on the Connection ...
-        job_id, job_created_at = airbyte.trigger_manual_sync_connection(
+        job_id, job_created_at = await airbyte.trigger_manual_sync_connection(
             session, airbyte_base_url, connection_id
         )
 
         job_status = JOB_STATUS_PENDING
 
         while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
-            job_status, job_created_at, job_updated_at = airbyte.get_job_status(
+            job_status, job_created_at, job_updated_at = await airbyte.get_job_status(
                 session, airbyte_base_url, job_id
             )
 

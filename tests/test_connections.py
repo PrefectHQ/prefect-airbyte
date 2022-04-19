@@ -1,16 +1,19 @@
-from prefect import flow, task
+from prefect import flow
 
 from prefect_airbyte.connections import trigger_sync
 
 
-@flow
-def my_test_flow():
-    connection_id = "askjdfhdsjlkfhaksdjf"
+async def test_trigger_sync(airbyte_trigger_sync_response):
+    @flow
+    async def my_test_flow() -> dict:
+        connection_id = "e1b2078f-882a-4f50-9942-cfe34b2d825b"
 
-    assert type(trigger_sync) is task
+        return await trigger_sync(connection_id=connection_id)
 
-    assert type(trigger_sync(connection_id=connection_id).result()) is dict
+    sync_info = await my_test_flow()
 
+    trigger_sync_result = sync_info.result().result()
 
-def test_trigger_sync():
-    my_test_flow()
+    assert type(trigger_sync_result) is dict
+
+    assert all(k in airbyte_trigger_sync_response for k in trigger_sync_result)
