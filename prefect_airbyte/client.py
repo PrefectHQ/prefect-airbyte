@@ -16,7 +16,7 @@ class AirbyteClient:
 
     This client assumes that you're using Airbyte Open-Source, since "For
     Airbyte Open-Source you don't need the API Token for
-    Authentication! All endpoints are possible to access using the
+    Authentication! All endpoints are accessible using the
     API without it."
     For more info, see the: [Airbyte docs](https://docs.airbyte.io/api-documentation).
 
@@ -59,6 +59,8 @@ class AirbyteClient:
         client = httpx.AsyncClient()
         if await self.check_health_status(client):
             return client
+        else:
+            raise err.AirbyteServerNotHealthyException
 
     async def check_health_status(self, client: httpx.AsyncClient):
         """
@@ -164,6 +166,7 @@ class AirbyteClient:
             )
             if response.status_code == 200:
                 job_id = response.json()["job"]["id"]
+                print(response.json())
                 job_created_at = response.json()["job"]["createdAt"]
                 return job_id, job_created_at
             elif response.status_code == 404:
