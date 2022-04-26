@@ -4,7 +4,6 @@ import logging
 from typing import Tuple
 
 import httpx
-from requests import RequestException
 
 from prefect_airbyte import exceptions as err
 
@@ -84,7 +83,7 @@ class AirbyteClient:
                     f"Airbyte Server health status: {health_status}"
                 )
             return True
-        except RequestException as e:
+        except httpx.HTTPStatusError as e:
             raise err.AirbyteServerNotHealthyException(e)
 
     async def export_configuration(
@@ -110,7 +109,7 @@ class AirbyteClient:
                 self.logger.debug("Export configuration response: %s", response)
                 export_config = response.content
                 return export_config
-        except RequestException as e:
+        except httpx.HTTPStatusError as e:
             raise err.AirbyteExportConfigurationFailed(e)
 
     async def get_connection_status(
@@ -140,8 +139,11 @@ class AirbyteClient:
 
             connection_status = response.json()["status"]
             return connection_status
-        except RequestException as e:
-            raise err.AirbyteServerNotHealthyException(e)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise err.ConnectionNotFoundException
+            else:
+                raise err.AirbyteServerNotHealthyException(e)
 
     async def trigger_manual_sync_connection(
         self, client: httpx.AsyncClient, airbyte_base_url: str, connection_id: str
@@ -179,7 +181,7 @@ class AirbyteClient:
                     f"Connection {connection_id} not found, please double "
                     f"check the connection_id ..."
                 )
-        except RequestException as e:
+        except httpx.HTTPStatusError as e:
             raise err.AirbyteServerNotHealthyException(e)
 
     async def get_job_status(
@@ -208,5 +210,5 @@ class AirbyteClient:
             elif response.status_code == 404:
                 self.logger.error(f"Job {job_id} not found...")
                 raise err.JobNotFoundException(f"Job {job_id} not found...")
-        except RequestException as e:
+        except httpx.HTTPStatusError as e:
             raise err.AirbyteServerNotHealthyException(e)

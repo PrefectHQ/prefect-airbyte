@@ -1,4 +1,3 @@
-import httpx
 import pytest
 
 from prefect_airbyte import exceptions as err
@@ -27,10 +26,15 @@ async def test_failed_trigger_sync(mock_failed_connection_sync_calls):
 
 
 async def test_bad_connection_id(mock_bad_connection_id_calls):
-    with pytest.raises(httpx.HTTPStatusError):
+    with pytest.raises(err.ConnectionNotFoundException):
         await trigger_sync.fn(connection_id=CONNECTION_ID)
 
 
 async def test_failed_health_check(mock_failed_health_check_calls):
     with pytest.raises(err.AirbyteServerNotHealthyException):
+        await trigger_sync.fn(connection_id=CONNECTION_ID)
+
+
+async def test_get_job_status_not_found(mock_invalid_job_status_calls):
+    with pytest.raises(err.JobNotFoundException):
         await trigger_sync.fn(connection_id=CONNECTION_ID)

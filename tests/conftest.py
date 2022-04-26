@@ -2,11 +2,15 @@ import pytest
 import respx
 from httpx import Response
 
+# connection fixtures / mocks
+
+CONNECTION_ID = "e1b2078f-882a-4f50-9942-cfe34b2d825b"
+
 
 @pytest.fixture
 def airbyte_trigger_sync_response() -> dict:
     return {
-        "connectionId": "e1b2078f-882a-4f50-9942-cfe34b2d825b",
+        "connectionId": CONNECTION_ID,
         "status": "active",
         "job": {"id": 45, "createdAt": 1650311569, "updatedAt": 1650311585},
     }
@@ -23,14 +27,9 @@ def airbyte_bad_health_check_response() -> dict:
 
 
 @pytest.fixture
-def airbyte_export_configuration_response() -> bytes:
-    return b""
-
-
-@pytest.fixture
 def airbyte_get_connection_response_json() -> dict:
     return {
-        "connectionId": "e1b2078f-882a-4f50-9942-cfe34b2d825b",
+        "connectionId": CONNECTION_ID,
         "name": "File <> Snowflake Demo",
         "namespaceDefinition": "destination",
         "namespaceFormat": "${SOURCE_NAMESPACE}",
@@ -100,7 +99,7 @@ def airbyte_base_job_status_response() -> dict:
         "job": {
             "id": 45,
             "configType": "sync",
-            "configId": "e1b2078f-882a-4f50-9942-cfe34b2d825b",
+            "configId": CONNECTION_ID,
             "createdAt": 1650644844,
             "updatedAt": 1650644844,
             "status": None,
@@ -125,6 +124,18 @@ def airbyte_get_pending_job_status_response(airbyte_base_job_status_response) ->
 def airbyte_get_failed_job_status_response(airbyte_base_job_status_response) -> dict:
     airbyte_base_job_status_response["job"]["status"] = "failed"
     return airbyte_base_job_status_response
+
+
+@pytest.fixture
+def airbyte_job_status_not_found_response():
+    return {
+        "id": "string",
+        "message": "string",
+        "exceptionClassName": "string",
+        "exceptionStack": ["string"],
+        "rootCauseExceptionClassName": "string",
+        "rootCauseExceptionStack": ["string"],
+    }
 
 
 @pytest.fixture
@@ -223,3 +234,59 @@ def mock_bad_connection_id_calls(
         url=f"{base_airbyte_url}/connections/get/",
         json={"connectionId": airbyte_get_connection_response_json["connectionId"]},
     ).mock(return_value=Response(404, json=airbyte_get_connection_not_found))
+
+
+@respx.mock(assert_all_called=True)
+@pytest.fixture
+def mock_invalid_job_status_calls(
+    respx_mock,
+    base_airbyte_url,
+    airbyte_good_health_check_response,
+    airbyte_get_good_job_status_response,
+    airbyte_trigger_sync_response,
+    airbyte_get_connection_response_json,
+    airbyte_job_status_not_found_response,
+):
+    respx_mock.get(url=f"{base_airbyte_url}/health/").mock(
+        return_value=Response(200, json=airbyte_good_health_check_response)
+    )
+
+    respx_mock.post(
+        url=f"{base_airbyte_url}/connections/get/",
+        json={"connectionId": airbyte_get_connection_response_json["connectionId"]},
+    ).mock(return_value=Response(200, json=airbyte_get_connection_response_json))
+
+    respx_mock.post(
+        url=f"{base_airbyte_url}/connections/sync/",
+        json={"connectionId": airbyte_trigger_sync_response["connectionId"]},
+    ).mock(return_value=Response(200, json=airbyte_trigger_sync_response))
+
+    respx_mock.post(
+        url=f"{base_airbyte_url}/jobs/get/",
+        json={"id": airbyte_get_good_job_status_response["job"]["id"]},
+    ).mock(return_value=Response(404, json=airbyte_job_status_not_found_response))
+
+
+# configuration fixtures / mocks
+
+
+@pytest.fixture
+def airbyte_good_export_configuration_response() -> bytes:
+    return b""
+
+
+@respx.mock(assert_all_called=True)
+@pytest.fixture
+def mock_successful_config_export_calls(
+    respx_mock,
+    base_airbyte_url,
+    airbyte_good_health_check_response,
+    airbyte_good_export_configuration_response,
+):
+    respx_mock.get(url=f"{base_airbyte_url}/health/").mock(
+        return_value=Response(200, json=airbyte_good_health_check_response)
+    )
+
+    respx_mock.post(url=f"{base_airbyte_url}/deployment/export/").mock(
+        return_value=Response(200, content=airbyte_good_export_configuration_response)
+    )
