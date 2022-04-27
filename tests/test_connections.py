@@ -25,6 +25,11 @@ async def test_canceled_trigger_manual_sync(mock_cancelled_connection_sync_calls
         await trigger_sync.fn(connection_id=CONNECTION_ID)
 
 
+async def test_connection_sync_inactive(mock_inactive_sync_calls):
+    with pytest.raises(err.AirbyteServerNotHealthyException):
+        await trigger_sync.fn(connection_id=CONNECTION_ID)
+
+
 async def test_failed_trigger_sync(mock_failed_connection_sync_calls):
     with pytest.raises(err.AirbyteSyncJobFailed):
         await trigger_sync.fn(connection_id=CONNECTION_ID)

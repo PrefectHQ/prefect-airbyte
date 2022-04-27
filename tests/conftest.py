@@ -304,6 +304,26 @@ def mock_cancelled_connection_sync_calls(
     ).mock(return_value=Response(200, json=airbyte_get_failed_job_status_response))
 
 
+@respx.mock(assert_all_called=True)
+@pytest.fixture
+def mock_inactive_sync_calls(
+    respx_mock,
+    base_airbyte_url,
+    airbyte_good_health_check_response,
+    airbyte_get_connection_response_json,
+):
+    respx_mock.get(url=f"{base_airbyte_url}/health/").mock(
+        return_value=Response(200, json=airbyte_good_health_check_response)
+    )
+
+    airbyte_get_connection_response_json["status"] = "inactive"
+
+    respx_mock.post(
+        url=f"{base_airbyte_url}/connections/get/",
+        json={"connectionId": airbyte_get_connection_response_json["connectionId"]},
+    ).mock(return_value=Response(200, json=airbyte_get_connection_response_json))
+
+
 # configuration fixtures / mocks
 
 
