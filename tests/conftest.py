@@ -276,6 +276,7 @@ def mock_cancelled_connection_sync_calls(
     airbyte_get_good_job_status_response,
     airbyte_trigger_sync_response,
     airbyte_get_connection_response_json,
+    airbyte_get_pending_job_status_response,
     airbyte_get_failed_job_status_response,
 ):
     respx_mock.get(url=f"{base_airbyte_url}/health/").mock(
@@ -291,6 +292,11 @@ def mock_cancelled_connection_sync_calls(
         url=f"{base_airbyte_url}/connections/sync/",
         json={"connectionId": airbyte_trigger_sync_response["connectionId"]},
     ).mock(return_value=Response(200, json=airbyte_trigger_sync_response))
+
+    respx_mock.post(
+        url=f"{base_airbyte_url}/jobs/get/",
+        json={"id": airbyte_get_good_job_status_response["job"]["id"]},
+    ).mock(return_value=Response(200, json=airbyte_get_pending_job_status_response))
 
     respx_mock.post(
         url=f"{base_airbyte_url}/jobs/get/",

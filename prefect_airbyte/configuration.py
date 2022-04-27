@@ -1,5 +1,4 @@
 """Tasks for updating and fetching Airbyte configurations"""
-import httpx
 from prefect import task
 from prefect.logging.loggers import get_logger
 
@@ -73,9 +72,11 @@ async def export_configuration(
 
     airbyte = AirbyteClient(logger, airbyte_base_url)
 
+    session = await airbyte.establish_session()
+
     logger.info("Initiating export of Airbyte configuration")
     airbyte_config = await airbyte.export_configuration(
-        airbyte_base_url=airbyte_base_url, client=httpx.AsyncClient()
+        airbyte_base_url=airbyte_base_url, client=session
     )
 
     return airbyte_config
