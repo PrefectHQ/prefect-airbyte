@@ -17,7 +17,7 @@ class AirbyteClient:
     Airbyte Open-Source you don't need the API Token for
     Authentication! All endpoints are accessible using the
     API without it."
-    For more info, see the: [Airbyte docs](https://docs.airbyte.io/api-documentation).
+    For more info, see the [Airbyte docs](https://docs.airbyte.io/api-documentation).
 
     Args:
         airbyte_base_url str: base api endpoint url for airbyte
