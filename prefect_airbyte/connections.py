@@ -106,27 +106,25 @@ async def trigger_sync(
     )
 
     airbyte = AirbyteClient(logger, airbyte_base_url)
-    session = await airbyte.establish_session()
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
         f"{poll_interval_s} seconds, airbyte_base_url {airbyte_base_url}"
     )
 
-    connection_status = await airbyte.get_connection_status(
-        session, airbyte_base_url, connection_id
-    )
+    connection_status = await airbyte.get_connection_status(connection_id)
+
     if connection_status == CONNECTION_STATUS_ACTIVE:
         # Trigger manual sync on the Connection ...
         job_id, job_created_at = await airbyte.trigger_manual_sync_connection(
-            session, airbyte_base_url, connection_id
+            connection_id
         )
 
         job_status = JOB_STATUS_PENDING
 
         while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
             job_status, job_created_at, job_updated_at = await airbyte.get_job_status(
-                session, airbyte_base_url, job_id
+                job_id
             )
 
             # pending┃running┃incomplete┃failed┃succeeded┃cancelled
@@ -150,11 +148,11 @@ async def trigger_sync(
         }
     elif connection_status == CONNECTION_STATUS_INACTIVE:
         logger.error(f"Please enable the Connection {connection_id} in Airbyte Server.")
-        raise err.AirbyteServerNotHealthyException(
+        raise err.AirbyteConnectionInactiveException(
             f"Please enable the Connection {connection_id} in Airbyte Server."
         )
     elif connection_status == CONNECTION_STATUS_DEPRECATED:
         logger.error(f"Connection {connection_id} is deprecated.")
-        raise err.AirbyteServerNotHealthyException(
+        raise err.AirbyeConnectionDeprecatedException(
             f"Connection {connection_id} is deprecated."
         )

@@ -3,13 +3,7 @@
 
 class ConnectionNotFoundException(Exception):
     """
-    custom exception class
-
-    Args:
-        Exception: base Exception class
-
-    Returns:
-        - ConnectionNotFoundException
+    Raises when a requested Airbyte connection cannot be found.
     """
 
     pass
@@ -17,13 +11,7 @@ class ConnectionNotFoundException(Exception):
 
 class AirbyteServerNotHealthyException(Exception):
     """
-    custom exception class
-
-    Args:
-        Exception: base Exception class
-
-    Returns:
-        - AirbyteServerNotHealthyException
+    Raises when a specified Airbyte instance returns an unhealthy response.
     """
 
     pass
@@ -31,13 +19,7 @@ class AirbyteServerNotHealthyException(Exception):
 
 class JobNotFoundException(Exception):
     """
-    custom exception class
-
-    Args:
-        Exception: base Exception class
-
-    Returns:
-        - JobNotFoundException
+    Raises when a requested Airbyte job cannot be found.
     """
 
     pass
@@ -45,13 +27,7 @@ class JobNotFoundException(Exception):
 
 class AirbyteSyncJobFailed(Exception):
     """
-    custom exception class
-
-    Args:
-        Exception: base Exception class
-
-    Returns:
-        - AirbyteSyncJobFailed
+    Raises when a specified Airbyte Sync Job fails.
     """
 
     pass
@@ -59,13 +35,23 @@ class AirbyteSyncJobFailed(Exception):
 
 class AirbyteExportConfigurationFailed(Exception):
     """
-    custom exception class
+    Raises when an Airbyte configuration export fails.
+    """
 
-    Args:
-        Exception: base Exception class
+    pass
 
-    Returns:
-        - AirbyteExportConfigurationFailed
+
+class AirbyteConnectionInactiveException(Exception):
+    """
+    Raises when a specified Airbyte connection is inactive.
+    """
+
+    pass
+
+
+class AirbyeConnectionDeprecatedException(Exception):
+    """
+    Raises when a specified Airbyte connection is deprecated.
     """
 
     pass

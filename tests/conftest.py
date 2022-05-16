@@ -82,6 +82,14 @@ def airbyte_get_connection_response_json() -> dict:
 
 
 @pytest.fixture
+def airbyte_get_inactive_connection_response(
+    airbyte_get_connection_response_json,
+) -> dict:
+    airbyte_get_connection_response_json["status"] = "inactive"
+    return airbyte_get_connection_response_json
+
+
+@pytest.fixture
 def airbyte_get_connection_not_found():
     return {
         "id": "string",

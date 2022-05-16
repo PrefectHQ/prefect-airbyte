@@ -13,8 +13,7 @@ async def export_configuration(
 ) -> bytearray:
 
     """
-    Task that exports an Airbyte config per `{AIRBYTE_HOST}/api/v1/deployment/export`
-
+    Task that exports an Airbyte config via `{AIRBYTE_HOST}/api/v1/deployment/export`
     Args:
         airbyte_server_host (str, optional): Hostname of Airbyte server where
             connection is configured. Will overwrite the value provided at init
@@ -72,11 +71,7 @@ async def export_configuration(
 
     airbyte = AirbyteClient(logger, airbyte_base_url)
 
-    session = await airbyte.establish_session()
-
     logger.info("Initiating export of Airbyte configuration")
-    airbyte_config = await airbyte.export_configuration(
-        airbyte_base_url=airbyte_base_url, client=session
-    )
+    airbyte_config = await airbyte.export_configuration()
 
     return airbyte_config
