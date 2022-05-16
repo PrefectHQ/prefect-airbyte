@@ -36,7 +36,7 @@ class AirbyteClient:
 
         Args:
             self AirbyteClient: `AirbyteClient` object
-            logger: for client use, e.g. `prefect.logging.loggers.get_logger`
+            logger: Logger instance for client to use during operation.
             airbyte_base_url: full API endpoint, assumes `http://localhost:8000/api/v1`
 
         Returns:
