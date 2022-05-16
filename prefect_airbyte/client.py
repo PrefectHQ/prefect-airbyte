@@ -85,7 +85,7 @@ class AirbyteClient:
 
     async def create_client(self) -> httpx.AsyncClient:
         """
-        Convenience method for establishing a healthy httpx Airbyte client
+        Convenience method for establishing a healthy `httpx` Airbyte client
 
         Args:
 
@@ -102,7 +102,6 @@ class AirbyteClient:
         Trigger an export of Airbyte configuration
 
         Args:
-            airbyte_base_url: URL of Airbyte server.
             client: httpx client with which to make call to the Airbyte server
 
         Returns:
@@ -126,7 +125,6 @@ class AirbyteClient:
         Get the status of a defined Airbyte connection
 
         Args:
-            client: httpx async client with which to make call to the Airbyte server
             connection_id: string value of the defined airbyte connection
 
         Returns:
@@ -159,8 +157,6 @@ class AirbyteClient:
         Trigger a manual sync of the Connection
 
         Args:
-            client: httpx client with which to make call to Airbyte server
-            airbyte_base_url: URL of Airbyte server
             connection_id: ID of connection to sync
 
         Returns: created_at - timestamp of sync job creation
@@ -198,8 +194,6 @@ class AirbyteClient:
         Get the status of an Airbyte connection sync job
 
         Args:
-            client: httpx client with which to make call to the Airbyte server
-            airbyte_base_url: URL of Airbyte server.
             job_id: str value of the airbyte job id as defined by airbyte
 
         Returns:
