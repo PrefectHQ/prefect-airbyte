@@ -5,7 +5,6 @@ on:
     tags:
       - "v*"
 
-
 jobs:
   build-release:
     name: Build Release
@@ -22,18 +21,39 @@ jobs:
         run: |
           python -m pip install --upgrade pip build
           python -m pip install --upgrade --upgrade-strategy eager -e .[dev]
+
       - name: Build a binary wheel and a source tarball
         run: |
           python -m build --sdist --wheel --outdir dist/
+
       - name: Publish build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: built-package
           path: "./dist"
 
+  publish-release:
+    name: Publish release to PyPI
+    needs: [build-release]
+    environment: "prod"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: built-package
+          path: "./dist"
+
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          verbose: true
+
   build-and-publish-docs:
     name: Build and publish docs
-    needs: [build-release]
+    needs: [build-release, publish-release]
     runs-on: ubuntu-latest
 
     steps:
@@ -49,22 +69,3 @@ jobs:
         with:
           branch: docs
           folder: site
-
-  publish-release:
-    name: Publish release to PyPI
-    needs: [build-release]
-    environment: "prod"
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: built-package
-          path: './dist'
-
-      - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          verbose: true

@@ -1,1 +1,1 @@
-:::prefect_airbyte.configuration
+::: prefect_airbyte.configuration
