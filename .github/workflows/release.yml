@@ -2,10 +2,8 @@ name: Build & Release
 
 on:
   push:
-    branches:
-      - "mkdocstrings"
-    # tags:
-    #   - "v*"
+    tags:
+      - "v*"
 
 jobs:
   build-release:
