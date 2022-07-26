@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.0
 
-Released on ????? ?th, 20??.
+Released on July 26th, 2022.
 
 ### Added
 
-- `task_name` task - [#1](https://github.com/PrefectHQ/prefect-airbyte/pull/1)
+- `trigger_sync` and `export_configuration` tasks - [#1](https://github.com/PrefectHQ/prefect-airbyte/pull/1)
