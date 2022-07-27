@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Updated the style of the docs - [#12](https://github.com/PrefectHQ/prefect-airbyte/pull/12)
 
 ### Deprecated
 
