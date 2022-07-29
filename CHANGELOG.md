@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Using `asyncio.sleep` instead of `time.sleep` within `trigger_sync` task.
+
 ### Security
 
 ## 0.1.0
