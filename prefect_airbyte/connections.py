@@ -1,6 +1,6 @@
 """Tasks for connecting to Airbyte and triggering connection syncs"""
 import uuid
-from time import sleep
+from asyncio import sleep
 
 from prefect import task
 from prefect.logging.loggers import get_logger
@@ -137,7 +137,7 @@ async def trigger_sync(
                 if status_updates:
                     logger.info(job_status)
                 # wait for next poll interval
-                sleep(poll_interval_s)
+                await sleep(poll_interval_s)
 
         return {
             "connection_id": connection_id,
