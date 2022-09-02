@@ -3,7 +3,7 @@
 ## Welcome!
 <!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
 
-`prefect-airbyte` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows trigger Airbyte syncs or export your connector configurations.
+`prefect-airbyte` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows to trigger Airbyte syncs or export your connector configurations.
 
 ## Getting Started
 
