@@ -7,13 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- 
+
 ### Added
 
-### Changed
-
-### Deprecated
-
-### Removed
+- a `timeout` parameter to `trigger_sync` and `export_configuration` passed to `httpx.AsyncClient`
 
 ### Fixed
 
