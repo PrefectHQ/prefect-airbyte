@@ -30,30 +30,31 @@ class AirbyteClient:
         self,
         logger: logging.Logger,
         airbyte_base_url: str = "http://localhost:8000/api/v1",
+        timeout: int = 5,
     ) -> None:
         """
         `AirbyteClient` constructor
 
         Args:
             logger: for client use, e.g. `prefect.logging.loggers.get_logger`
-            airbyte_base_url: Full Airbyte API endpoint.
+            airbyte_base_url: Full Airbyte API endpoint
+            timeout: seconds for httpx client timeout
 
         Returns:
             AirbyteClient: an instance of the `AirbyteClient` class
         """
         self.airbyte_base_url = airbyte_base_url
         self.logger = logger
+        self.timeout = timeout
 
     async def _establish_session(self) -> httpx.AsyncClient:
         """
         AirbyteClient method to `check_health_status` and establish a `client` session
 
-        Args:
-
         Returns:
             client: `httpx.AsyncClient` used to communicate with the Airbyte API
         """
-        client = httpx.AsyncClient()
+        client = httpx.AsyncClient(timeout=self.timeout)
         if await self.check_health_status(client):
             return client
         else:
@@ -88,7 +89,7 @@ class AirbyteClient:
         Convenience method for establishing a healthy `httpx` Airbyte client
 
         Args:
-
+            timeout: `int` seconds for request timeout with this client
         Returns:
             httpx.AsyncClient: client for interacting with Airbyte instance
         """

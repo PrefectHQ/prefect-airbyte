@@ -10,6 +10,7 @@ async def export_configuration(
     airbyte_server_host: str = "localhost",
     airbyte_server_port: int = "8000",
     airbyte_api_version: str = "v1",
+    timeout: int = 5,
 ) -> bytearray:
 
     """
@@ -23,6 +24,7 @@ async def export_configuration(
         airbyte_api_version (str, optional): Version of Airbyte API to use to
             trigger connection sync, will overwrite the value provided at
             init if provided.
+        timeout (int): timeout in seconds on the httpx AirbyteClient
 
     Returns:
         bytearray: `bytearray` containing Airbyte configuration
@@ -39,8 +41,8 @@ async def export_configuration(
 
         @task
         def zip_and_write_somewhere(
-            airbyte_config: bytearray
-            somwhere: str = 'my_destination.gz','
+            airbyte_configuration: bytearray
+            somewhere: str = 'my_destination.gz','
         ):
             with gzip.open('my_destination.gz', 'wb') as f:
                     f.write(airbyte_configuration)
@@ -69,7 +71,7 @@ async def export_configuration(
         f"{airbyte_server_port}/api/{airbyte_api_version}"
     )
 
-    airbyte = AirbyteClient(logger, airbyte_base_url)
+    airbyte = AirbyteClient(logger, airbyte_base_url, timeout=timeout)
 
     logger.info("Initiating export of Airbyte configuration")
     airbyte_config = await airbyte.export_configuration()

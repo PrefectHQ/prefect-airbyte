@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.1.1
+
+Released on September 2, 2022.
+
+### Added
+
+- a `timeout` parameter to `trigger_sync` and `export_configuration` passed to `httpx.AsyncClient`
+
+### Fixed
+
 - Using `asyncio.sleep` instead of `time.sleep` within `trigger_sync` task.
 
 ### Security

@@ -27,6 +27,7 @@ async def trigger_sync(
     connection_id: str = None,
     poll_interval_s: int = 15,
     status_updates: bool = False,
+    timeout: int = 5,
 ) -> dict:
     """
     Task run method for triggering an Airbyte Connection.
@@ -45,17 +46,17 @@ async def trigger_sync(
 
     Args:
         str airbyte_server_host : Hostname of Airbyte server where connection is
-            configured. Will overwrite the value provided at init if provided.
+            configured.
         str airbyte_server_port: Port that the Airbyte server is listening on.
-            Will overwrite the value provided at init if provided.
+
         str airbyte_api_version: Version of Airbyte API to use to trigger connection
-            sync. Will overwrite the value provided at init if provided.
-        str connection_id: if provided,
-            will overwrite the value provided at init.
-        int poll_interval_s: this task polls the
-            Airbyte API for status, if provided this value will
+            sync.
+        str connection_id: the Airbyte connection ID
+        int poll_interval_s: how often to poll the
+            Airbyte API for sync status, if provided this will
             override the default polling time of 15 seconds.
         bool status_updates: whether to log status as the task polls jobs
+        str timeout: The request `timeout` for the `httpx.AsyncClient`
 
     Returns:
         dict: connection_id (str) and succeeded_at (timestamp str)
@@ -105,7 +106,7 @@ async def trigger_sync(
         f"{airbyte_server_port}/api/{airbyte_api_version}"
     )
 
-    airbyte = AirbyteClient(logger, airbyte_base_url)
+    airbyte = AirbyteClient(logger, airbyte_base_url, timeout=timeout)
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
@@ -147,9 +148,12 @@ async def trigger_sync(
             "job_updated_at": job_updated_at,
         }
     elif connection_status == CONNECTION_STATUS_INACTIVE:
-        logger.error(f"Please enable the Connection {connection_id} in Airbyte Server.")
+        logger.error(
+            f"Connection: {connection_id} is inactive"
+            " - you'll need to enable it in your Airbyte instance"
+        )
         raise err.AirbyteConnectionInactiveException(
-            f"Please enable the Connection {connection_id} in Airbyte Server."
+            f"Please enable the Connection {connection_id} in Airbyte instance."
         )
     elif connection_status == CONNECTION_STATUS_DEPRECATED:
         logger.error(f"Connection {connection_id} is deprecated.")
