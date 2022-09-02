@@ -39,8 +39,8 @@ async def export_configuration(
 
         @task
         def zip_and_write_somewhere(
-            airbyte_config: bytearray
-            somwhere: str = 'my_destination.gz','
+            airbyte_configuration: bytearray
+            somewhere: str = 'my_destination.gz','
         ):
             with gzip.open('my_destination.gz', 'wb') as f:
                     f.write(airbyte_configuration)
