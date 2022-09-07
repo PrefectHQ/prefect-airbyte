@@ -187,7 +187,7 @@ class AirbyteClient:
 
             raise err.AirbyteServerNotHealthyException() from e
 
-    async def get_job_status(self, job_id: str) -> tuple[str, str, str]:
+    async def get_job_status(self, job_id: str) -> Tuple[str, str, str]:
         """
         Get the status of an Airbyte connection sync job
 
