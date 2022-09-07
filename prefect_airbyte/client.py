@@ -182,7 +182,7 @@ class AirbyteClient:
             if e.response.status_code == 404:
                 raise err.ConnectionNotFoundException(
                     f"Connection {connection_id} not found, please double "
-                    f"check the connection_id ..."
+                    f"check the connection_id."
                 ) from e
 
             raise err.AirbyteServerNotHealthyException() from e
@@ -210,6 +210,5 @@ class AirbyteClient:
             return job_status, job_created_at, job_updated_at
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                self.logger.error(f"Job {job_id} not found...")
-                raise err.JobNotFoundException(f"Job {job_id} not found...") from e
+                raise err.JobNotFoundException(f"Job {job_id} not found.") from e
             raise err.AirbyteServerNotHealthyException() from e
