@@ -204,9 +204,10 @@ class AirbyteClient:
             response = await client.post(get_connection_url, json={"id": job_id})
             response.raise_for_status()
 
-            job_status = response.json()["job"]["status"]
-            job_created_at = response.json()["job"]["createdAt"]
-            job_updated_at = response.json()["job"]["updatedAt"]
+            job = response.json()["job"]
+            job_status = job["status"]
+            job_created_at = job["createdAt"]
+            job_updated_at = job["updatedAt"]
             return job_status, job_created_at, job_updated_at
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
