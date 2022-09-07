@@ -121,7 +121,7 @@ class AirbyteClient:
             export_config = response.content
             return export_config
         except httpx.HTTPStatusError as e:
-            raise err.AirbyteExportConfigurationFailed(e) from e
+            raise err.AirbyteExportConfigurationFailed() from e
 
     async def get_connection_status(self, connection_id: str) -> str:
         """
@@ -149,7 +149,7 @@ class AirbyteClient:
             return connection_status
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                raise err.ConnectionNotFoundException from e
+                raise err.ConnectionNotFoundException() from e
             else:
                 raise err.AirbyteServerNotHealthyException() from e
 
