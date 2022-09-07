@@ -55,10 +55,8 @@ class AirbyteClient:
             client: `httpx.AsyncClient` used to communicate with the Airbyte API
         """
         client = httpx.AsyncClient(timeout=self.timeout)
-        if await self.check_health_status(client):
-            return client
-        else:
-            raise err.AirbyteServerNotHealthyException
+        await self.check_health_status(client)
+        return client
 
     async def check_health_status(self, client: httpx.AsyncClient):
         """
@@ -73,6 +71,8 @@ class AirbyteClient:
         get_connection_url = self.airbyte_base_url + "/health/"
         try:
             response = await client.get(get_connection_url)
+            response.raise_for_status()
+
             self.logger.debug("Health check response: %s", response.json())
             key = "available" if "available" in response.json() else "db"
             health_status = response.json()[key]
@@ -82,7 +82,7 @@ class AirbyteClient:
                 )
             return True
         except httpx.HTTPStatusError as e:
-            raise err.AirbyteServerNotHealthyException(e)
+            raise err.AirbyteServerNotHealthyException() from e
 
     async def create_client(self) -> httpx.AsyncClient:
         """
@@ -98,7 +98,7 @@ class AirbyteClient:
 
     async def export_configuration(
         self,
-    ) -> bytearray:
+    ) -> bytes:
         """
         Trigger an export of Airbyte configuration
 
@@ -114,12 +114,14 @@ class AirbyteClient:
 
         try:
             response = await client.post(get_connection_url)
-            if response.status_code == 200:
-                self.logger.debug("Export configuration response: %s", response)
-                export_config = response.content
-                return export_config
+            response.raise_for_status()
+
+            self.logger.debug("Export configuration response: %s", response)
+
+            export_config = response.content
+            return export_config
         except httpx.HTTPStatusError as e:
-            raise err.AirbyteExportConfigurationFailed(e)
+            raise err.AirbyteExportConfigurationFailed(e) from e
 
     async def get_connection_status(self, connection_id: str) -> str:
         """
@@ -147,9 +149,9 @@ class AirbyteClient:
             return connection_status
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                raise err.ConnectionNotFoundException
+                raise err.ConnectionNotFoundException from e
             else:
-                raise err.AirbyteServerNotHealthyException(e)
+                raise err.AirbyteServerNotHealthyException() from e
 
     async def trigger_manual_sync_connection(
         self, connection_id: str
@@ -172,25 +174,20 @@ class AirbyteClient:
             response = await client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
-            if response.status_code == 200:
-                job_id = response.json()["job"]["id"]
-                print(response.json())
-                job_created_at = response.json()["job"]["createdAt"]
-                return job_id, job_created_at
-            elif response.status_code == 404:
-                # connection_id not found
-                self.logger.warning(
-                    f"Connection {connection_id} not found, please double "
-                    f"check the connection_id ..."
-                )
+            response.raise_for_status()
+            job_id = response.json()["job"]["id"]
+            job_created_at = response.json()["job"]["createdAt"]
+            return job_id, job_created_at
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
                 raise err.ConnectionNotFoundException(
                     f"Connection {connection_id} not found, please double "
                     f"check the connection_id ..."
-                )
-        except httpx.HTTPStatusError as e:
-            raise err.AirbyteServerNotHealthyException(e)
+                ) from e
 
-    async def get_job_status(self, job_id: str) -> str:
+            raise err.AirbyteServerNotHealthyException() from e
+
+    async def get_job_status(self, job_id: str) -> tuple[str, str, str]:
         """
         Get the status of an Airbyte connection sync job
 
@@ -205,13 +202,14 @@ class AirbyteClient:
         get_connection_url = self.airbyte_base_url + "/jobs/get/"
         try:
             response = await client.post(get_connection_url, json={"id": job_id})
-            if response.status_code == 200:
-                job_status = response.json()["job"]["status"]
-                job_created_at = response.json()["job"]["createdAt"]
-                job_updated_at = response.json()["job"]["updatedAt"]
-                return job_status, job_created_at, job_updated_at
-            elif response.status_code == 404:
-                self.logger.error(f"Job {job_id} not found...")
-                raise err.JobNotFoundException(f"Job {job_id} not found...")
+            response.raise_for_status()
+
+            job_status = response.json()["job"]["status"]
+            job_created_at = response.json()["job"]["createdAt"]
+            job_updated_at = response.json()["job"]["updatedAt"]
+            return job_status, job_created_at, job_updated_at
         except httpx.HTTPStatusError as e:
-            raise err.AirbyteServerNotHealthyException(e)
+            if e.response.status_code == 404:
+                self.logger.error(f"Job {job_id} not found...")
+                raise err.JobNotFoundException(f"Job {job_id} not found...") from e
+            raise err.AirbyteServerNotHealthyException() from e
