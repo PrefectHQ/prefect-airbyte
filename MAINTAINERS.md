@@ -10,8 +10,6 @@ Requires an installation of Python 3.7+
 
 We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.
 
-<<<<<<< ours
-=======
 ### GitHub setup
 
 Generate a Prefect Collection project in the terminal:
@@ -46,7 +44,6 @@ https://github.com/PrefectHQ/prefect-airbyte/settings/branches
 
 Lastly, [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) for the repository can be set, like this [example here](https://github.com/PrefectHQ/prefect/blob/master/.github/CODEOWNERS).
 
->>>>>>> theirs
 ### Project setup
 
 To setup your project run the following:
@@ -58,8 +55,7 @@ To setup your project run the following:
    pre-commit install
    ```
 
-<<<<<<< ours
-To verify the set up was successful you can run the following:
+To verify the setup was successful you can run the following:
 - Run the tests for the example tasks and flow in the bootstrapped collection
    ```bash
    pytest tests
@@ -68,9 +64,6 @@ To verify the set up was successful you can run the following:
    ```bash
    mkdocs serve
    ```
-=======
-To verify the setup was successful you can run the following:
->>>>>>> theirs
 
 You are now ready to start creating your Prefect collection!
 
@@ -82,8 +75,6 @@ For information about the use and development of tasks and flow, check out the [
 
 This collection has been setup to with [mkdocs](https://www.mkdocs.org/) for automatically generated documentation. The signatures and docstrings of your tasks and flow will be used to generate documentation for the users of this collection. You can make changes to the structure of the generated documentation by editing the `mkdocs.yml` file in this project.
 
-<<<<<<< ours
-=======
 To add a new page for a module in your collection, create a new markdown file in the `docs` directory and add that file to the `nav` section of `mkdocs.yml`. If you want to automatically generate documentation based on the docstrings and signatures of the contents of the module with `mkdocstrings`, add a line to the new markdown file in the following format:
 
 ```markdown
@@ -94,20 +85,15 @@ You can also refer to the `flows.md` and `tasks.md` files included in your gener
 
 Once you have working code, replace the default "Write and run a flow" example in `README.md` to match your collection.
 
->>>>>>> theirs
 ## Development lifecycle
 
 ### CI Pipeline
 
-<<<<<<< ours
-This collection comes with [GitHub Actions](https://docs.github.com/en/actions) for testing and linting. To add additional actions, you can add jobs in the `.github/workflows` folder. On PR, the pipeline will run linting via [`black`](https://black.readthedocs.io/en/stable/) and [`flake8`](https://flake8.pycqa.org/en/latest/) and unit tests via `pytest`.
-=======
 This collection comes with [GitHub Actions](https://docs.github.com/en/actions) for testing and linting. To add additional actions, you can add jobs in the `.github/workflows` folder. Upon a pull request, the pipeline will run linting via [`black`](https://black.readthedocs.io/en/stable/), [`flake8`](https://flake8.pycqa.org/en/latest/), [`interrogate`](https://interrogate.readthedocs.io/en/latest/), and unit tests via `pytest` alongside `coverage`.
 
 `interrogate` will tell you which methods, functions, classes, and modules have docstrings, and which do not--the job has a fail threshold of 95%, meaning that it will fail if more than 5% of the codebase is undocumented. We recommend following the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for docstring format.
 
 Simiarly, `coverage` ensures that the codebase includes tests--the job has a fail threshold of 80%, meaning that it will fail if more than 20% of the codebase is missing tests.
->>>>>>> theirs
 
 ### Package and Publish
 
@@ -117,15 +103,11 @@ To publish to PyPI, you'll need a PyPI account and to generate an API token to a
 
 Once you've obtained a PyPI API token, [create a GitHub secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) named `PYPI_API_TOKEN`.
 
-<<<<<<< ours
-There is also a GitHub Action that performs a test publish to [test PyPI](https://test.pypi.org/) to allow for a test deployment without affecting PyPI. You will need a separate token for test PyPI which can be saved in a GitHub secret names `TEST_PYPI_API_TOKEN`
-=======
 To publish a new version of your collection, [create a new GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) and tag it with the version that you want to deploy (e.g. v0.3.2). This will trigger a workflow to publish the new version on PyPI and deploy the updated docs to GitHub pages.
 
 Upon publishing, a `docs` branch is automatically created. To hook this up to GitHub Pages, simply head over to https://github.com/PrefectHQ/prefect-airbyte/settings/pages, select `docs` under the dropdown menu, keep the default `/root` folder, `Save`, and upon refresh, you should see a prompt stating "Your site is published at https://PrefectHQ.github.io/prefect-airbyte". Don't forget to add this link to the repo's "About" section, under "Website" so users can access the docs easily.
 
 Feel free to [submit your collection](https://orion-docs.prefect.io/collections/overview/#listing-in-the-collections-catalog) to the Prefect [Collections Catalog](https://orion-docs.prefect.io/collections/catalog/)!
->>>>>>> theirs
 
 ## Further guidance
 

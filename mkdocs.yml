@@ -1,11 +1,6 @@
 site_name: prefect-airbyte
-<<<<<<< ours
-site_url: https://prefecthq.github.io/prefect-airbyte
-repo_url: https://github.com/prefecthq/prefect-airbyte
-=======
 site_url: https://PrefectHQ.github.io/prefect-airbyte
 repo_url: https://github.com/PrefectHQ/prefect-airbyte
->>>>>>> theirs
 edit_uri: /edit/main/docs/
 theme:
   name: material
@@ -15,12 +10,8 @@ theme:
     accent: blue
   icon:
     repo: fontawesome/brands/github
-<<<<<<< ours
-  logo: img/prefect-logo-white.png
-=======
   logo:
     img/prefect-logo-white.png
->>>>>>> theirs
   font:
     text: Inter
     code: Source Code Pro

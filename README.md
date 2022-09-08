@@ -17,7 +17,6 @@
 </p>
 
 ## Welcome!
-<!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
 
 `prefect-airbyte` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows to trigger Airbyte syncs or export your connector configurations.
 
@@ -39,21 +38,8 @@ Install `prefect-airbyte`
 pip install prefect-airbyte
 ```
 
-<<<<<<< ours
 ### Airbyte setup
 See [the airbyte documention](https://docs.airbyte.com/deploying-airbyte) on how to get your own instance.
-=======
-Then, register to [view the block](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
-
-```bash
-prefect block register -m prefect_airbyte.credentials
-```
-
-Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://orion-docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://orion-docs.prefect.io/ui/blocks/).
-
-### Write and run a flow
->>>>>>> theirs
-
 
 ### Examples
 

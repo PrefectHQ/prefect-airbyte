@@ -21,8 +21,6 @@ to force column width */
     white-space: nowrap;
 }
 
-<<<<<<< ours
-=======
 /* badge formatting */
 .badge::before {
     background-color: #1860F2;
@@ -70,5 +68,3 @@ to force column width */
     background-color: #726576;
     content: "Advanced";
 }
-
->>>>>>> theirs
