@@ -69,23 +69,23 @@ async def trigger_sync(
 
     Examples:
 
-            Flow that triggers an Airybte connection sync:
+        Flow that triggers an Airybte connection sync:
 
-            ```python
-            from prefect import flow
-            from prefect_airbyte.connections import trigger_sync
+        ```python
+        from prefect import flow
+        from prefect_airbyte.connections import trigger_sync
 
 
-            @flow
-            def example_trigger_sync_flow():
+        @flow
+        def example_trigger_sync_flow():
 
-                # Run other tasks and subflows here
+            # Run other tasks and subflows here
 
-                trigger_sync(
-                    connection_id="your-connection-id-to-sync"
-                )
+            trigger_sync(
+                connection_id="your-connection-id-to-sync"
+            )
 
-            example_trigger_sync_flow()
+        example_trigger_sync_flow()
     """
     logger = get_logger()
 
