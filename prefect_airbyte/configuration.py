@@ -11,23 +11,20 @@ async def export_configuration(
     airbyte_server_port: int = "8000",
     airbyte_api_version: str = "v1",
     timeout: int = 5,
-) -> bytearray:
+) -> bytes:
 
     """
-    Task that exports an Airbyte config via `{AIRBYTE_HOST}/api/v1/deployment/export`
+    Prefect Task that exports an Airbyte configuration via
+    `{airbyte_server_host}/api/v1/deployment/export`.
+
     Args:
-        airbyte_server_host (str, optional): Hostname of Airbyte server where
-            connection is configured. Will overwrite the value provided at init
-            if provided.
-        airbyte_server_port (str, optional): Port that the Airbyte server is
-            listening on, will overwrite the value provided at init if provided.
-        airbyte_api_version (str, optional): Version of Airbyte API to use to
-            trigger connection sync, will overwrite the value provided at
-            init if provided.
-        timeout (int): timeout in seconds on the httpx AirbyteClient
+        airbyte_server_host: Airbyte instance hostname where connection is configured.
+        airbyte_server_port: Port where Airbyte instance is listening.
+        airbyte_api_version: Version of Airbyte API to use to export configuration.
+        timeout: Timeout in seconds on the `httpx.AsyncClient`.
 
     Returns:
-        bytearray: `bytearray` containing Airbyte configuration
+        Bytes containing Airbyte configuration
 
     Examples:
 
@@ -41,7 +38,7 @@ async def export_configuration(
 
         @task
         def zip_and_write_somewhere(
-            airbyte_configuration: bytearray
+            airbyte_configuration: bytes
             somewhere: str = 'my_destination.gz','
         ):
             with gzip.open('my_destination.gz', 'wb') as f:

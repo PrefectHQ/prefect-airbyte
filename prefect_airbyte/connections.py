@@ -21,16 +21,15 @@ JOB_STATUS_PENDING = "pending"
 
 @task
 async def trigger_sync(
+    connection_id: str,
     airbyte_server_host: str = "localhost",
     airbyte_server_port: int = "8000",
     airbyte_api_version: str = "v1",
-    connection_id: str = None,
     poll_interval_s: int = 15,
     status_updates: bool = False,
     timeout: int = 5,
 ) -> dict:
-    """
-    Task run method for triggering an Airbyte Connection.
+    """Prefect Task for triggering an Airbyte connection sync.
 
     *It is assumed that the user will have previously configured
     a Source & Destination into a Connection.*
@@ -45,21 +44,22 @@ async def trigger_sync(
     when it receives an error status code from an API call.
 
     Args:
-        str airbyte_server_host : Hostname of Airbyte server where connection is
-            configured.
-        str airbyte_server_port: Port that the Airbyte server is listening on.
+        connection_id: Airbyte connection ID to trigger a sync for.
+        airbyte_server_host: Airbyte instance hostname where connection is configured.
+        airbyte_server_port: Port where Airbyte instance is listening.
+        airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
+        poll_interval_s: How often to poll Airbyte for sync status.
+        status_updates: Whether to log sync job status while polling.
+        timeout: The POST request `timeout` for the `httpx.AsyncClient`.
 
-        str airbyte_api_version: Version of Airbyte API to use to trigger connection
-            sync.
-        str connection_id: the Airbyte connection ID
-        int poll_interval_s: how often to poll the
-            Airbyte API for sync status, if provided this will
-            override the default polling time of 15 seconds.
-        bool status_updates: whether to log status as the task polls jobs
-        str timeout: The request `timeout` for the `httpx.AsyncClient`
+    Raises:
+        ValueError: If `connection_id` is not a valid UUID.
+        err.AirbyteSyncJobFailed: If airbyte returns `JOB_STATUS_FAILED`.
+        err.AirbyteConnectionInactiveException: If a given connection is inactive.
+        err.AirbyeConnectionDeprecatedException: If a given connection is deprecated.
 
     Returns:
-        dict: connection_id (str) and succeeded_at (timestamp str)
+        Job metadata, including the connection ID and final status of the sync.
 
     Examples:
 
@@ -81,15 +81,8 @@ async def trigger_sync(
 
         example_trigger_sync_flow()
         ```
-
     """
     logger = get_logger()
-
-    if not connection_id:
-        raise ValueError(
-            "Value for parameter `connection_id` *must* \
-        be provided."
-        )
 
     try:
         uuid.UUID(connection_id)
