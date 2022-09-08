@@ -21,16 +21,15 @@ JOB_STATUS_PENDING = "pending"
 
 @task
 async def trigger_sync(
+    connection_id: str,
     airbyte_server_host: str = "localhost",
     airbyte_server_port: int = "8000",
     airbyte_api_version: str = "v1",
-    connection_id: str = None,
     poll_interval_s: int = 15,
     status_updates: bool = False,
     timeout: int = 5,
 ) -> dict:
-    """
-    Task run method for triggering an Airbyte Connection.
+    """Prefect Task for triggering an Airbyte connection sync.
 
     *It is assumed that the user will have previously configured
     a Source & Destination into a Connection.*
@@ -45,51 +44,50 @@ async def trigger_sync(
     when it receives an error status code from an API call.
 
     Args:
-        str airbyte_server_host : Hostname of Airbyte server where connection is
-            configured.
-        str airbyte_server_port: Port that the Airbyte server is listening on.
+        connection_id (str): the Airbyte connection ID to trigger a sync for.
+        airbyte_server_host (str, optional): Hostname of Airbyte server where the
+            connection is configured. Defaults to "localhost".
+        airbyte_server_port (int, optional): Port where Airbyte instance is listening.
+            Defaults to "8000".
+        airbyte_api_version (str, optional): Version of Airbyte API to use to trigger
+            connection sync. Defaults to "v1".
+        poll_interval_s (int, optional): how often to poll the
+            Airbyte API for sync status. Defaults to 15 seconds.
+        status_updates (bool, optional): whether to log sync job status while polling.
+            Defaults to False.
+        timeout (int, optional): The POST request `timeout` for the `httpx.AsyncClient`.
+            Defaults to 5.
 
-        str airbyte_api_version: Version of Airbyte API to use to trigger connection
-            sync.
-        str connection_id: the Airbyte connection ID
-        int poll_interval_s: how often to poll the
-            Airbyte API for sync status, if provided this will
-            override the default polling time of 15 seconds.
-        bool status_updates: whether to log status as the task polls jobs
-        str timeout: The request `timeout` for the `httpx.AsyncClient`
+    Raises:
+        ValueError: if `connection_id` is not a valid UUID
+        err.AirbyteSyncJobFailed: if airbyte returns `JOB_STATUS_FAILED`
+        err.AirbyteConnectionInactiveException: if a specified connection is inactive
+        err.AirbyeConnectionDeprecatedException: if a specified connection is deprecated
 
     Returns:
-        dict: connection_id (str) and succeeded_at (timestamp str)
+        dict: job metadata, including the connection ID and final status
 
     Examples:
 
-        Flow that triggers an Airybte connection sync:
+            Flow that triggers an Airybte connection sync:
 
-        ```python
-        from prefect import flow
-        from prefect_airbyte.connections import trigger_sync
+            ```python
+            from prefect import flow
+            from prefect_airbyte.connections import trigger_sync
 
 
-        @flow
-        def example_trigger_sync_flow():
+            @flow
+            def example_trigger_sync_flow():
 
-            # Run other tasks and subflows here
+                # Run other tasks and subflows here
 
-            trigger_sync(
-                connection_id="your-connection-id-to-sync"
-            )
+                trigger_sync(
+                    connection_id="your-connection-id-to-sync"
+                )
 
-        example_trigger_sync_flow()
-        ```
-
+            example_trigger_sync_flow()
     """
     logger = get_logger()
-
-    if not connection_id:
-        raise ValueError(
-            "Value for parameter `connection_id` *must* \
-        be provided."
-        )
 
     try:
         uuid.UUID(connection_id)
