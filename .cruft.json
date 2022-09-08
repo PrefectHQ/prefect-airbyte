@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/PrefectHQ/prefect-collection-template",
-  "commit": "14e368a2530ef420bf4d518b26e1acdc6c313bbd",
+  "commit": "df6ab40ef55c4e1ff9cfadbecd0c6ee2da9dc560",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,6 +10,9 @@
       "collection_name": "prefect-airbyte",
       "collection_slug": "prefect_airbyte",
       "collection_short_description": "prefect-airbyte contains tasks for interacting with Airbyte instances",
+      "_copy_without_render": [
+        ".github/workflows/*.yml"
+      ],
       "_template": "https://github.com/PrefectHQ/prefect-collection-template"
     }
   },

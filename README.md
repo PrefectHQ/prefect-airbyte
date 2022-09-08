@@ -1,5 +1,21 @@
 # prefect-airbyte
 
+<p align="center">
+    <a href="https://pypi.python.org/pypi/prefect-airbyte/" alt="PyPI version">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-airbyte?color=0052FF&labelColor=090422"></a>
+    <a href="https://github.com/PrefectHQ/prefect-airbyte/" alt="Stars">
+        <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <a href="https://pepy.tech/badge/prefect-airbyte/" alt="Downloads">
+        <img src="https://img.shields.io/pypi/dm/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <a href="https://github.com/PrefectHQ/prefect-airbyte/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <br>
+    <a href="https://prefect-airbyte-community.slack.com" alt="Slack">
+        <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
+    <a href="https://discourse.prefect-airbyte.io/" alt="Discourse">
+        <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
+</p>
+
 ## Welcome!
 <!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
 
@@ -23,8 +39,20 @@ Install `prefect-airbyte`
 pip install prefect-airbyte
 ```
 
+<<<<<<< ours
 ### Airbyte setup
 See [the airbyte documention](https://docs.airbyte.com/deploying-airbyte) on how to get your own instance.
+=======
+Then, register to [view the block](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
+
+```bash
+prefect block register -m prefect_airbyte.credentials
+```
+
+Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://orion-docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://orion-docs.prefect.io/ui/blocks/).
+
+### Write and run a flow
+>>>>>>> theirs
 
 
 ### Examples
