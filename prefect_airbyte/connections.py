@@ -44,28 +44,22 @@ async def trigger_sync(
     when it receives an error status code from an API call.
 
     Args:
-        connection_id (str): the Airbyte connection ID to trigger a sync for.
-        airbyte_server_host (str, optional): Hostname of Airbyte server where the
-            connection is configured. Defaults to "localhost".
-        airbyte_server_port (int, optional): Port where Airbyte instance is listening.
-            Defaults to "8000".
-        airbyte_api_version (str, optional): Version of Airbyte API to use to trigger
-            connection sync. Defaults to "v1".
-        poll_interval_s (int, optional): how often to poll the
-            Airbyte API for sync status. Defaults to 15 seconds.
-        status_updates (bool, optional): whether to log sync job status while polling.
-            Defaults to False.
-        timeout (int, optional): The POST request `timeout` for the `httpx.AsyncClient`.
-            Defaults to 5.
+        connection_id: Airbyte connection ID to trigger a sync for.
+        airbyte_server_host: Airbyte instance hostname where connection is configured.
+        airbyte_server_port: Port where Airbyte instance is listening.
+        airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
+        poll_interval_s: How often to poll Airbyte for sync status.
+        status_updates: Whether to log sync job status while polling.
+        timeout: The POST request `timeout` for the `httpx.AsyncClient`.
 
     Raises:
-        ValueError: if `connection_id` is not a valid UUID
-        err.AirbyteSyncJobFailed: if airbyte returns `JOB_STATUS_FAILED`
-        err.AirbyteConnectionInactiveException: if a specified connection is inactive
-        err.AirbyeConnectionDeprecatedException: if a specified connection is deprecated
+        ValueError: If `connection_id` is not a valid UUID.
+        err.AirbyteSyncJobFailed: If airbyte returns `JOB_STATUS_FAILED`.
+        err.AirbyteConnectionInactiveException: If a given connection is inactive.
+        err.AirbyeConnectionDeprecatedException: If a given connection is deprecated.
 
     Returns:
-        dict: job metadata, including the connection ID and final status
+        Job metadata, including the connection ID and final status of the sync.
 
     Examples:
 
