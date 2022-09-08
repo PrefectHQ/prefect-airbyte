@@ -86,6 +86,7 @@ async def trigger_sync(
             )
 
         example_trigger_sync_flow()
+        ```
     """
     logger = get_logger()
 
