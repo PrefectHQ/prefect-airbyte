@@ -17,17 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Status code handling in Airbyte client - [#20](https://github.com/PrefectHQ/prefect-airbyte/pull/20)
+
 ## 0.1.1
 
 Released on September 2, 2022.
 
 ### Added
 
-- a `timeout` parameter to `trigger_sync` and `export_configuration` passed to `httpx.AsyncClient`
+- a `timeout` parameter to `trigger_sync` and `export_configuration` passed to `httpx.AsyncClient` - [#18](https://github.com/PrefectHQ/prefect-airbyte/pull/18)
 
 ### Fixed
 
-- Using `asyncio.sleep` instead of `time.sleep` within `trigger_sync` task.
+- Using `asyncio.sleep` instead of `time.sleep` within `trigger_sync` task - [#13](https://github.com/PrefectHQ/prefect-airbyte/pull/13)
 
 ### Security
 
