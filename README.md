@@ -1,7 +1,22 @@
 # prefect-airbyte
 
+<p align="center">
+    <a href="https://pypi.python.org/pypi/prefect-airbyte/" alt="PyPI version">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-airbyte?color=0052FF&labelColor=090422"></a>
+    <a href="https://github.com/PrefectHQ/prefect-airbyte/" alt="Stars">
+        <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <a href="https://pepy.tech/badge/prefect-airbyte/" alt="Downloads">
+        <img src="https://img.shields.io/pypi/dm/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <a href="https://github.com/PrefectHQ/prefect-airbyte/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
+    <br>
+    <a href="https://prefect-airbyte-community.slack.com" alt="Slack">
+        <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
+    <a href="https://discourse.prefect-airbyte.io/" alt="Discourse">
+        <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
+</p>
+
 ## Welcome!
-<!--  &emsp; <img src="imgs/airbyte.png" width="40" height="55" /> -->
 
 `prefect-airbyte` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows to trigger Airbyte syncs or export your connector configurations.
 
@@ -25,7 +40,6 @@ pip install prefect-airbyte
 
 ### Airbyte setup
 See [the airbyte documention](https://docs.airbyte.com/deploying-airbyte) on how to get your own instance.
-
 
 ### Examples
 
