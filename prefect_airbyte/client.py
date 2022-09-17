@@ -199,7 +199,7 @@ class AirbyteClient:
                 field: raw_job[field] for field in ["status", "createdAt", "updatedAt"]
             }
 
-            if stream_logs and len(attempts) != 0:
+            if stream_logs and attempts:
                 job_info["logs"] = attempts[0]["logs"]["logLines"]
                 job_info["n_log_lines"] = len(job_info["logs"])
             else:
