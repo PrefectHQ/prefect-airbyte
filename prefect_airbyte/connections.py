@@ -123,6 +123,7 @@ async def trigger_sync(
             job_status = job_metadata["status"]
 
             if stream_logs and job_metadata["logs"]:
+                # only log lines created since last job status check
                 new_log_lines = job_metadata["logs"][n_log_lines:]
                 logger.info("\n".join(new_log_lines))
                 n_log_lines = job_metadata["n_log_lines"]

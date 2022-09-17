@@ -200,6 +200,7 @@ class AirbyteClient:
             }
 
             if stream_logs and attempts:
+                # always grab logs for most recent attempt of this job
                 job_info["logs"] = attempts[0]["logs"]["logLines"]
                 job_info["n_log_lines"] = len(job_info["logs"])
             else:
