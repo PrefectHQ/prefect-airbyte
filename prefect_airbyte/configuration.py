@@ -1,6 +1,5 @@
 """Tasks for updating and fetching Airbyte configurations"""
-from prefect import task
-from prefect.logging.loggers import get_logger
+from prefect import get_run_logger, task
 
 from prefect_airbyte.client import AirbyteClient
 
@@ -61,7 +60,7 @@ async def export_configuration(
         ```
     """
 
-    logger = get_logger()
+    logger = get_run_logger()
 
     airbyte_base_url = (
         f"http://{airbyte_server_host}:"

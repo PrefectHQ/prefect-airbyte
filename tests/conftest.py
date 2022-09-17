@@ -119,6 +119,9 @@ def airbyte_base_job_status_response() -> dict:
 @pytest.fixture
 def airbyte_get_good_job_status_response(airbyte_base_job_status_response) -> dict:
     airbyte_base_job_status_response["job"]["status"] = "succeeded"
+    airbyte_base_job_status_response["attempts"] = [
+        {"logs": {"logLines": "loggy log logs".split()}}
+    ]
     return airbyte_base_job_status_response
 
 

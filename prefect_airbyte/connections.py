@@ -2,8 +2,7 @@
 import uuid
 from asyncio import sleep
 
-from prefect import task
-from prefect.logging.loggers import get_logger
+from prefect import get_run_logger, task
 
 from prefect_airbyte import exceptions as err
 from prefect_airbyte.client import AirbyteClient
@@ -26,6 +25,7 @@ async def trigger_sync(
     airbyte_server_port: int = "8000",
     airbyte_api_version: str = "v1",
     poll_interval_s: int = 15,
+    stream_logs: bool = False,
     status_updates: bool = False,
     timeout: int = 5,
 ) -> dict:
@@ -49,6 +49,7 @@ async def trigger_sync(
         airbyte_server_port: Port where Airbyte instance is listening.
         airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
         poll_interval_s: How often to poll Airbyte for sync status.
+        stream_logs: whether to include airbyte job logs in Prefect task logs
         status_updates: Whether to log sync job status while polling.
         timeout: The POST request `timeout` for the `httpx.AsyncClient`.
 
@@ -82,7 +83,7 @@ async def trigger_sync(
         example_trigger_sync_flow()
         ```
     """
-    logger = get_logger()
+    logger = get_run_logger()
 
     try:
         uuid.UUID(connection_id)
@@ -110,16 +111,21 @@ async def trigger_sync(
 
     if connection_status == CONNECTION_STATUS_ACTIVE:
         # Trigger manual sync on the Connection ...
-        job_id, job_created_at = await airbyte.trigger_manual_sync_connection(
-            connection_id
-        )
+        job_id, _ = await airbyte.trigger_manual_sync_connection(connection_id)
 
         job_status = JOB_STATUS_PENDING
+        n_log_lines = 0
 
         while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
-            job_status, job_created_at, job_updated_at = await airbyte.get_job_status(
-                job_id
+            job_metadata = await airbyte.get_job_status(
+                job_id=job_id, stream_logs=stream_logs
             )
+            job_status = job_metadata["status"]
+
+            if stream_logs and job_metadata["logs"]:
+                new_log_lines = job_metadata["logs"][n_log_lines:]
+                logger.info("\n".join(new_log_lines))
+                n_log_lines = job_metadata["n_log_lines"]
 
             # pending┃running┃incomplete┃failed┃succeeded┃cancelled
             if job_status == JOB_STATUS_SUCCEEDED:
@@ -136,9 +142,10 @@ async def trigger_sync(
         return {
             "connection_id": connection_id,
             "status": connection_status,
-            "job_status": job_status,
-            "job_created_at": job_created_at,
-            "job_updated_at": job_updated_at,
+            "job_status": job_metadata["status"],
+            "job_created_at": job_metadata["createdAt"],
+            "job_updated_at": job_metadata["updatedAt"],
+            "logs": job_metadata["logs"],
         }
     elif connection_status == CONNECTION_STATUS_INACTIVE:
         logger.error(

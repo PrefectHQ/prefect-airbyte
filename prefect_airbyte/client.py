@@ -172,17 +172,18 @@ class AirbyteClient:
 
             raise err.AirbyteServerNotHealthyException() from e
 
-    async def get_job_status(self, job_id: str) -> Tuple[str, str, str]:
+    async def get_job_status(
+        self, job_id: str, stream_logs: bool = False
+    ) -> Tuple[str, str, str]:
         """
         Gets the status of an Airbyte connection sync job.
 
         Args:
             job_id: ID of the Airbyte job to check.
+            stream_logs: whether to capture Airbyte job logs in metadata.
 
         Returns:
-            job_status: The current status of the job.
-            job_created_at: Datetime string of when the job was created.
-            job_updated_at: Datetime string of the when the job was last updated.
+            job_metadata
         """
         client = await self.create_client()
 
@@ -191,11 +192,21 @@ class AirbyteClient:
             response = await client.post(get_connection_url, json={"id": job_id})
             response.raise_for_status()
 
-            job = response.json()["job"]
-            job_status = job["status"]
-            job_created_at = job["createdAt"]
-            job_updated_at = job["updatedAt"]
-            return job_status, job_created_at, job_updated_at
+            raw_job = response.json()["job"]
+            attempts = response.json()["attempts"]
+
+            job_info = {
+                field: raw_job[field] for field in ["status", "createdAt", "updatedAt"]
+            }
+
+            if stream_logs and len(attempts) != 0:
+                job_info["logs"] = attempts[0]["logs"]["logLines"]
+                job_info["n_log_lines"] = len(job_info["logs"])
+            else:
+                job_info["logs"] = None
+
+            return job_info
+
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
                 raise err.JobNotFoundException(f"Job {job_id} not found.") from e
