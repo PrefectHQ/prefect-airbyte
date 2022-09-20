@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- `stream_logs` parameter to `trigger_sync` to surface airbyte job logs through prefect logger - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
+- `stream_logs` parameter to `trigger_sync` to surface airbyte job logs through Prefect run logger - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
 ### Changed
-- return value of `AirbyteClient.get_job_status` to `job_metadata: dict` to simplify inclusion of logs and future job metadata fields - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
-- logger used by all tasks from standard python logger to Prefect logger via `get_run_logger()`. As a consequence, also changed are the unit tests format, namely we're calling all tasks via a `test_flow` instead of calling tasks underlying function with `.fn()` to allow for use of the prefect logger - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
+- Return value of `AirbyteClient.get_job_status` to `job_metadata: dict` to simplify inclusion of logs and future job metadata fields - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
+- Logger used by all tasks from standard python logger to Prefect logger via `get_run_logger()`. As a consequence, also changed are the unit tests format, namely we're calling all tasks via a `test_flow` instead of calling tasks underlying function with `.fn()` to allow for use of the prefect logger - [#28](https://github.com/PrefectHQ/prefect-airbyte/pull/28)
 
 ### Deprecated
 

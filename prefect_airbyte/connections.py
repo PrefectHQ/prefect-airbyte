@@ -49,7 +49,7 @@ async def trigger_sync(
         airbyte_server_port: Port where Airbyte instance is listening.
         airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
         poll_interval_s: How often to poll Airbyte for sync status.
-        stream_logs: whether to include airbyte job logs in Prefect task logs
+        stream_logs: Whether to include airbyte job logs in Prefect task logs.
         status_updates: Whether to log sync job status while polling.
         timeout: The POST request `timeout` for the `httpx.AsyncClient`.
 

@@ -180,10 +180,11 @@ class AirbyteClient:
 
         Args:
             job_id: ID of the Airbyte job to check.
-            stream_logs: whether to capture Airbyte job logs in metadata.
+            stream_logs: Whether to capture Airbyte job logs in metadata.
 
         Returns:
-            job_metadata
+            job_metadata: Metadata about the Airbyte sync, including `status`,
+                `createdAt`, `updatedAt`, and `logs` if `stream_logs`.
         """
         client = await self.create_client()
 
@@ -192,8 +193,9 @@ class AirbyteClient:
             response = await client.post(get_connection_url, json={"id": job_id})
             response.raise_for_status()
 
-            raw_job = response.json()["job"]
-            attempts = response.json()["attempts"]
+            contents = response.json()
+            raw_job = contents["job"]
+            attempts = contents["attempts"]
 
             job_info = {
                 field: raw_job[field] for field in ["status", "createdAt", "updatedAt"]
@@ -201,7 +203,7 @@ class AirbyteClient:
 
             if stream_logs and attempts:
                 # always grab logs for most recent attempt of this job
-                job_info["logs"] = attempts[0]["logs"]["logLines"]
+                job_info["logs"] = attempts[-1]["logs"]["logLines"]
                 job_info["n_log_lines"] = len(job_info["logs"])
             else:
                 job_info["logs"] = None
