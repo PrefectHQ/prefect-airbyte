@@ -123,6 +123,8 @@ If you encounter and bugs while using `prefect-airbyte`, feel free to open an is
 
 If you have any questions or issues while using `prefect-airbyte`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack)
 
+Feel free to ⭐️ or watch [`prefect-airbyte`](https://github.com/PrefectHQ/prefect-airbyte) for updates too!
+
 ## Development
 
 If you'd like to install a version of `prefect-airbyte` for development, first clone the repository and then perform an editable install with `pip`:
