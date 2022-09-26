@@ -47,25 +47,25 @@ Lastly, [code owners](https://docs.github.com/en/repositories/managing-your-repo
 ### Project setup
 
 To setup your project run the following:
-   ```bash
-   # Create an editable install of your project
-   pip install -e ".[dev]"
 
-   # Configure pre-commit hooks
-   pre-commit install
-   ```
+```bash
+# Create an editable install of your project
+pip install -e ".[dev]"
+
+# Configure pre-commit hooks
+pre-commit install
+```
 
 To verify the setup was successful you can run the following:
-- Run the tests for the example tasks and flow in the bootstrapped collection
-   ```bash
-   pytest tests
-   ```
-- Serve the bootstrapped example docs with `mkdocs`
-   ```bash
-   mkdocs serve
-   ```
 
-You are now ready to start creating your Prefect collection!
+- Run the tests for tasks and flows in the collection:
+  ```bash
+  pytest tests
+  ```
+- Serve the docs with `mkdocs`:
+  ```bash
+  mkdocs serve
+  ```
 
 ## Developing tasks and flows
 
@@ -94,6 +94,10 @@ This collection comes with [GitHub Actions](https://docs.github.com/en/actions) 
 `interrogate` will tell you which methods, functions, classes, and modules have docstrings, and which do not--the job has a fail threshold of 95%, meaning that it will fail if more than 5% of the codebase is undocumented. We recommend following the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for docstring format.
 
 Simiarly, `coverage` ensures that the codebase includes tests--the job has a fail threshold of 80%, meaning that it will fail if more than 20% of the codebase is missing tests.
+
+### Track Issues on Project Board
+
+To automatically add issues to a GitHub Project Board, you'll need a [secret added](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-an-environment) to the repository. Specifically, a secret named `ADD_TO_PROJECT_URL`, formatted like `https://github.com/orgs/<GITHUB_ORGANIZATION>/projects/<PROJECT_NUMBER>`.
 
 ### Package and Publish
 
