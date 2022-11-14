@@ -28,9 +28,11 @@ class AirbyteClient:
         self,
         logger: logging.Logger,
         airbyte_base_url: str = "http://localhost:8000/api/v1",
+        auth: Tuple[str, str] = ("airbyte", "password"),
         timeout: int = 5,
     ):
         self.airbyte_base_url = airbyte_base_url
+        self.auth = auth
         self.logger = logger
         self.timeout = timeout
 
@@ -41,7 +43,7 @@ class AirbyteClient:
         Returns:
             Session used to communicate with the Airbyte API.
         """
-        client = httpx.AsyncClient(timeout=self.timeout)
+        client = httpx.AsyncClient(auth=self.auth, timeout=self.timeout)
         await self.check_health_status(client)
         return client
 

@@ -2,11 +2,10 @@
 import uuid
 from asyncio import sleep
 
-from prefect import task
-from prefect.logging.loggers import get_logger
+from prefect import get_run_logger, task
 
 from prefect_airbyte import exceptions as err
-from prefect_airbyte.client import AirbyteClient
+from prefect_airbyte.server import AirbyteServer
 
 # Connection statuses
 CONNECTION_STATUS_ACTIVE = "active"
@@ -21,10 +20,8 @@ JOB_STATUS_PENDING = "pending"
 
 @task
 async def trigger_sync(
+    airbyte_server: AirbyteServer,
     connection_id: str,
-    airbyte_server_host: str = "localhost",
-    airbyte_server_port: int = "8000",
-    airbyte_api_version: str = "v1",
     poll_interval_s: int = 15,
     status_updates: bool = False,
     timeout: int = 5,
@@ -44,10 +41,8 @@ async def trigger_sync(
     when it receives an error status code from an API call.
 
     Args:
+        airbyte_server: An `AirbyteServer` block to create an `AirbyteClient`.
         connection_id: Airbyte connection ID to trigger a sync for.
-        airbyte_server_host: Airbyte instance hostname where connection is configured.
-        airbyte_server_port: Port where Airbyte instance is listening.
-        airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
         poll_interval_s: How often to poll Airbyte for sync status.
         status_updates: Whether to log sync job status while polling.
         timeout: The POST request `timeout` for the `httpx.AsyncClient`.
@@ -68,7 +63,7 @@ async def trigger_sync(
         ```python
         from prefect import flow
         from prefect_airbyte.connections import trigger_sync
-
+        from prefect_airbyte.server import AirbyteServer
 
         @flow
         def example_trigger_sync_flow():
@@ -76,13 +71,14 @@ async def trigger_sync(
             # Run other tasks and subflows here
 
             trigger_sync(
+                airbyte_server=AirbyteServer.load("oss-airbyte"),
                 connection_id="your-connection-id-to-sync"
             )
 
         example_trigger_sync_flow()
         ```
     """
-    logger = get_logger()
+    logger = get_run_logger()
 
     try:
         uuid.UUID(connection_id)
@@ -92,18 +88,11 @@ async def trigger_sync(
             i.e. 32 hex characters, including hyphens."
         )
 
-    # see https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com
-    # /rapidoc-api-docs.html#overview
-    airbyte_base_url = (
-        f"http://{airbyte_server_host}:"
-        f"{airbyte_server_port}/api/{airbyte_api_version}"
-    )
-
-    airbyte = AirbyteClient(logger, airbyte_base_url, timeout=timeout)
+    airbyte = airbyte_server.get_client(logger=logger, timeout=timeout)
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
-        f"{poll_interval_s} seconds, airbyte_base_url {airbyte_base_url}"
+        f"{poll_interval_s} seconds, airbyte_base_url {airbyte_server.airbyte_base_url}"
     )
 
     connection_status = await airbyte.get_connection_status(connection_id)
