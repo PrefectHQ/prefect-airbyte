@@ -88,27 +88,29 @@ async def trigger_sync(
             i.e. 32 hex characters, including hyphens."
         )
 
-    airbyte = airbyte_server.get_client(logger=logger, timeout=timeout)
+    airbyte_client = airbyte_server.get_client(logger=logger, timeout=timeout)
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
         f"{poll_interval_s} seconds, airbyte_base_url {airbyte_server.airbyte_base_url}"
     )
 
-    connection_status = await airbyte.get_connection_status(connection_id)
+    connection_status = await airbyte_client.get_connection_status(connection_id)
 
     if connection_status == CONNECTION_STATUS_ACTIVE:
         # Trigger manual sync on the Connection ...
-        job_id, job_created_at = await airbyte.trigger_manual_sync_connection(
+        job_id, job_created_at = await airbyte_client.trigger_manual_sync_connection(
             connection_id
         )
 
         job_status = JOB_STATUS_PENDING
 
         while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
-            job_status, job_created_at, job_updated_at = await airbyte.get_job_status(
-                job_id
-            )
+            (
+                job_status,
+                job_created_at,
+                job_updated_at,
+            ) = await airbyte_client.get_job_status(job_id)
 
             # pending┃running┃incomplete┃failed┃succeeded┃cancelled
             if job_status == JOB_STATUS_SUCCEEDED:

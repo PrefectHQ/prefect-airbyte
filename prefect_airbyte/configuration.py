@@ -57,11 +57,11 @@ async def export_configuration(
     """
     logger = get_run_logger()
 
-    airbyte = airbyte_server.get_client(logger=logger, timeout=timeout)
+    airbyte_client = airbyte_server.get_client(logger=logger, timeout=timeout)
 
     logger.info("Initiating export of Airbyte configuration")
     try:
-        return await airbyte.export_configuration()
+        return await airbyte_client.export_configuration()
 
     except AirbyteExportConfigurationFailed as e:
         logger.warning(

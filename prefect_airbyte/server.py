@@ -1,10 +1,9 @@
 """A module for defining OSS Airbyte interactions with Prefect."""
 
 from logging import Logger
-from typing import Optional
 
 from prefect.blocks.core import Block
-from pydantic import Field, HttpUrl, IPvAnyAddress, SecretStr
+from pydantic import Field, SecretStr
 
 from prefect_airbyte.client import AirbyteClient
 
@@ -18,7 +17,6 @@ class AirbyteServer(Block):
         server_host: Hostname for Airbyte API.
         server_port: Port for Airbyte API.
         api_version: Version of Airbyte API to use.
-        ```
 
     Example:
         Create an `AirbyteServer` block for an Airbyte instance running on localhost:
@@ -38,11 +36,9 @@ class AirbyteServer(Block):
         ```
     """
 
-    _block_type_name: Optional[str] = "Airbyte Server"
-    _block_type_slug: Optional[str] = "airbyte-server"
-    _logo_url: Optional[
-        HttpUrl
-    ] = "https://images.ctfassets.net/zscdif0zqppk/6gm7wsC7ANnKYQsm7oiSYz/aac1ad5e054d35d9e24af8d6ed3aed5f/59758427?h=250"  # noqa
+    _block_type_name = "Airbyte Server"
+    _block_type_slug = "airbyte-server"
+    _logo_url = "https://images.ctfassets.net/zscdif0zqppk/6gm7wsC7ANnKYQsm7oiSYz/aac1ad5e054d35d9e24af8d6ed3aed5f/59758427?h=250"  # noqa
 
     username: str = Field(
         default="airbyte",
@@ -54,9 +50,10 @@ class AirbyteServer(Block):
         description="Password to authenticate with Airbyte API.",
     )
 
-    server_host: IPvAnyAddress = Field(
-        default="127.0.0.1",
+    server_host: str = Field(
+        default="localhost",
         description="Host address of Airbyte server.",
+        example="127.0.0.1",
     )
 
     server_port: int = Field(
@@ -69,9 +66,18 @@ class AirbyteServer(Block):
         description="Airbyte API version to use.",
     )
 
+    use_ssl: bool = Field(
+        default=False,
+        description="Whether to use SSL when connecting to Airbyte server.",
+    )
+
     @property
     def airbyte_base_url(self) -> str:
-        return f"http://{self.server_host}:{self.server_port}/api/{self.api_version}"
+        """Property containing the base URL for the Airbyte API."""
+        protocol = "https" if self.use_ssl else "http"
+        return (
+            f"{protocol}://{self.server_host}:{self.server_port}/api/{self.api_version}"
+        )
 
     def get_client(self, logger: Logger, timeout: int = 10) -> AirbyteClient:
         """Returns an `AirbyteClient` instance for interacting with the Airbyte API.

@@ -155,7 +155,7 @@ def airbyte_job_status_not_found_response():
 
 @pytest.fixture
 def base_airbyte_url():
-    return "http://127.0.0.1:8000/api/v1"
+    return "http://localhost:8000/api/v1"
 
 
 @respx.mock(assert_all_called=True)
