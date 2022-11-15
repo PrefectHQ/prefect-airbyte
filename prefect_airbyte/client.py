@@ -12,7 +12,7 @@ class AirbyteClient:
     """
     Client class used to call API endpoints on an Airbyte server.
 
-    This client currently supports username/password authentication as set in `auth`
+    This client currently supports username/password authentication as set in `auth`.
 
     For more info, see the [Airbyte docs](https://docs.airbyte.io/api-documentation).
 

@@ -77,7 +77,7 @@ class AirbyteServer(Block):
     )
 
     @property
-    def airbyte_base_url(self) -> str:
+    def base_url(self) -> str:
         """Property containing the base URL for the Airbyte API."""
         protocol = "https" if self.use_ssl else "http"
         return (
@@ -96,7 +96,7 @@ class AirbyteServer(Block):
         """
         return AirbyteClient(
             logger=logger,
-            airbyte_base_url=self.airbyte_base_url,
+            airbyte_base_url=self.base_url,
             auth=(self.username, self.password.get_secret_value()),
             timeout=timeout,
         )

@@ -92,7 +92,7 @@ async def trigger_sync(
 
     logger.info(
         f"Getting Airbyte Connection {connection_id}, poll interval "
-        f"{poll_interval_s} seconds, airbyte_base_url {airbyte_server.airbyte_base_url}"
+        f"{poll_interval_s} seconds, airbyte_base_url {airbyte_server.base_url}"
     )
 
     connection_status = await airbyte_client.get_connection_status(connection_id)
