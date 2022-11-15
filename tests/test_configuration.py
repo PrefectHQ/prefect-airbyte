@@ -15,6 +15,18 @@ async def test_export_configuration(
         assert type(export) is bytes
 
 
+async def test_export_configuration_using_kwargs(
+    mock_successful_config_export_calls, airbyte_server
+):
+    with disable_run_logger():
+        export = await export_configuration.fn(
+            airbyte_server_host="localhost",
+            airbyte_server_port=8000,
+        )
+
+        assert type(export) is bytes
+
+
 async def test_export_configuration_failed_health(
     mock_failed_health_check_calls, airbyte_server
 ):

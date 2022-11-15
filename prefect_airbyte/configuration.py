@@ -1,4 +1,6 @@
 """Tasks for updating and fetching Airbyte configurations"""
+from typing import Optional
+
 from prefect import get_run_logger, task
 
 from prefect_airbyte.server import AirbyteServer
@@ -6,7 +8,9 @@ from prefect_airbyte.server import AirbyteServer
 
 @task
 async def export_configuration(
-    airbyte_server: AirbyteServer,
+    airbyte_server: Optional[AirbyteServer] = None,
+    airbyte_server_host: Optional[str] = None,
+    airbyte_server_port: Optional[int] = None,
     timeout: int = 5,
 ) -> bytes:
 
@@ -14,8 +18,15 @@ async def export_configuration(
     Prefect Task that exports an Airbyte configuration via
     `{airbyte_server_host}/api/v1/deployment/export`.
 
+    As of `prefect-airbyte==0.2.0`, the kwargs `airbyte_server_host` and
+    `airbyte_server_port` can be replaced by passing an `airbyte_server` block
+    instance to generate the `AirbyteClient`. Using the `airbyte_server` block is
+    preferred, but the individual kwargs remain for backwards compatibility.
+
     Args:
         airbyte_server: An `AirbyteServer` block for generating an `AirbyteClient`.
+        airbyte_server_host: Airbyte server host to connect to.
+        airbyte_server_port: Airbyte server port to connect to.
         timeout: Timeout in seconds on the `httpx.AsyncClient`.
 
     Returns:
@@ -56,8 +67,29 @@ async def export_configuration(
     """
     logger = get_run_logger()
 
-    airbyte_client = airbyte_server.get_client(logger=logger, timeout=timeout)
+    if not airbyte_server:
+        logger.warning(
+            "Using kwargs `airbyte_server_host` and `airbyte_server_port` will be  "
+            "deprecated. Please pass an `airbyte_server` block to this task instead."
+        )
+        if airbyte_server_host or airbyte_server_port:
+            airbyte_server = AirbyteServer(
+                server_host=airbyte_server_host or "localhost",
+                server_port=airbyte_server_port or 8000,
+            )
+        else:
+            airbyte_server = AirbyteServer()
+    else:
+        if airbyte_server_host or airbyte_server_port:
+            logger.warning(
+                "Ignoring kwargs `airbyte_server_host` and `airbyte_server_port` "
+                "because `airbyte_server` block was passed."
+            )
 
-    logger.info("Initiating export of Airbyte configuration")
+    async with airbyte_server.get_client(
+        logger=logger, timeout=timeout
+    ) as airbyte_client:
 
-    return await airbyte_client.export_configuration()
+        logger.info("Initiating export of Airbyte configuration")
+
+        return await airbyte_client.export_configuration()
