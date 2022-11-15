@@ -53,7 +53,7 @@ local_airbyte_server = AirbyteServer()
 remote_airbyte_server = AirbyteServer(
     username="Marvin",
     password="DontPanic42",
-    server_host="<someIP>",
+    server_host="42.42.42.42",
     server_port="4242"
 )
 

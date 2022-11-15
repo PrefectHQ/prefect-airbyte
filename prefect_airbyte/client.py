@@ -83,6 +83,10 @@ class AirbyteClient:
             Gzipped Airbyte configuration data.
         """
         async with self.create_client() as client:
+            self.logger.warning(
+                "As of Airbyte v0.40.7-alpha, the Airbyte API no longer supports "
+                "exporting configurations. See the Octavia CLI docs for more info."
+            )
 
             get_connection_url = self.airbyte_base_url + "/deployment/export/"
 
@@ -95,9 +99,9 @@ class AirbyteClient:
                 export_config = response.content
                 return export_config
             except httpx.HTTPStatusError as e:
-                self.logger.warning(
-                    "As of Airbyte v0.40.7-alpha, the Airbyte API no longer supports "
-                    "exporting configurations. See the Octavia CLI docs for more info."
+                self.logger.error(
+                    "If you are using Airbyte v0.40.7-alpha, there is no longer "
+                    "an API endpoint for exporting configurations."
                 )
                 raise err.AirbyteExportConfigurationFailed() from e
 
