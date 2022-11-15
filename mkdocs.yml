@@ -50,3 +50,4 @@ nav:
     - Client: client.md
     - Configuration: configuration.md
     - Connections: connections.md
+    - Server: server.md
