@@ -25,7 +25,6 @@ class AirbyteServer(Block):
         from prefect_airbyte.connection import trigger_sync
         from prefect_airbyte.server import AirbyteServer
 
-
         @flow
         def airbyte_orchestration_flow():
             airbyte_server = AirbyteServer()
@@ -43,32 +42,38 @@ class AirbyteServer(Block):
     username: str = Field(
         default="airbyte",
         description="Username to authenticate with Airbyte API.",
+        title="Username",
     )
 
     password: SecretStr = Field(
         default=SecretStr("password"),
         description="Password to authenticate with Airbyte API.",
+        title="Password",
     )
 
     server_host: str = Field(
         default="localhost",
         description="Host address of Airbyte server.",
         example="127.0.0.1",
+        title="Server Host",
     )
 
     server_port: int = Field(
         default=8000,
         description="Port number of Airbyte server.",
+        title="Server Port",
     )
 
     api_version: str = Field(
         default="v1",
         description="Airbyte API version to use.",
+        title="API Version",
     )
 
     use_ssl: bool = Field(
         default=False,
         description="Whether to use SSL when connecting to Airbyte server.",
+        title="Use SSL",
     )
 
     @property

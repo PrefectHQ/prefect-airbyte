@@ -12,8 +12,7 @@ class AirbyteClient:
     """
     Client class used to call API endpoints on an Airbyte server.
 
-    This client assumes that you're using an OSS Airbyte server which does not require
-    an API key to access its a API.
+    This client currently supports username/password authentication as set in `auth`
 
     For more info, see the [Airbyte docs](https://docs.airbyte.io/api-documentation).
 
@@ -96,6 +95,10 @@ class AirbyteClient:
                 export_config = response.content
                 return export_config
             except httpx.HTTPStatusError as e:
+                self.logger.warning(
+                    "As of Airbyte v0.40.7-alpha, the Airbyte API no longer supports "
+                    "exporting configurations. See the Octavia CLI docs for more info."
+                )
                 raise err.AirbyteExportConfigurationFailed() from e
 
     async def get_connection_status(self, connection_id: str) -> str:
@@ -112,7 +115,6 @@ class AirbyteClient:
 
             get_connection_url = self.airbyte_base_url + "/connections/get/"
 
-            # TODO - Missing auth because Airbyte API currently doesn't yet support auth
             try:
                 response = await client.post(
                     get_connection_url, json={"connectionId": connection_id}
@@ -146,7 +148,6 @@ class AirbyteClient:
 
             get_connection_url = self.airbyte_base_url + "/connections/sync/"
 
-            # TODO - no current authentication methods from Airbyte
             try:
                 response = await client.post(
                     get_connection_url, json={"connectionId": connection_id}

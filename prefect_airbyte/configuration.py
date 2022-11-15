@@ -1,7 +1,6 @@
 """Tasks for updating and fetching Airbyte configurations"""
 from prefect import get_run_logger, task
 
-from prefect_airbyte.exceptions import AirbyteExportConfigurationFailed
 from prefect_airbyte.server import AirbyteServer
 
 
@@ -60,12 +59,5 @@ async def export_configuration(
     airbyte_client = airbyte_server.get_client(logger=logger, timeout=timeout)
 
     logger.info("Initiating export of Airbyte configuration")
-    try:
-        return await airbyte_client.export_configuration()
 
-    except AirbyteExportConfigurationFailed as e:
-        logger.warning(
-            "As of Airbyte v0.40.7-alpha, the Airbyte API no longer supports "
-            "exporting configurations. See the Octavia CLI docs for more info."
-        )
-        raise e
+    return await airbyte_client.export_configuration()
