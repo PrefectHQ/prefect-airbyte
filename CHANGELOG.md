@@ -11,9 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Fixed
+
 ### Deprecated
 
 ### Removed
+
+## 0.1.3
+
+Released on November 16, 2022.
+
+This release does not introduce breaking changes, but changes the default interface for tasks in this collection. Previously, tasks only accepted individual kwargs like `airbyte_server_host` and `airbyte_server_port` that were needed to construct the base url and make API calls. Now that Airbyte supports basic user/password authentication, it made sense to create an `AirbyteServer` block that stores this user auth data and uses it to configure clients. 
+
+We will create an `AirbyteServer` on the fly for users who continue to pass the old kwargs, but print a message that they will eventually be removed from the interface.
+
+### Added
+- `AirbyteServer` block to handle client generation and support for NGINX authentication on OSS instances - [#40](https://github.com/PrefectHQ/prefect-airbyte/pull/40)
+- Deprecation warning on `AirbyteClient.export_configuration`, as OSS airbyte v0.40.7 has removed the corresponding endpoint - [#40](https://github.com/PrefectHQ/prefect-airbyte/pull/40)
+- The `httpx.AsyncClient` as a private member of the class, so we could use the whole `AirbyteClient` as a context manager when it is retrieved by `AirbyteServer.get_client` - [#40](https://github.com/PrefectHQ/prefect-airbyte/pull/40)
+
+### Changed
+- Task inputs for `trigger_sync` and `export_configuration` from accepting Airbyte network configurations as separate kwargs to accepting an `AirbyteServer` block instance - [#40](https://github.com/PrefectHQ/prefect-airbyte/pull/40)
+
 
 ### Fixed
 - Docstring for `trigger_sync` task and removed inappropriate default value for `connection_id` - [#26](https://github.com/PrefectHQ/prefect-airbyte/pull/26)

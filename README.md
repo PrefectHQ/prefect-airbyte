@@ -42,12 +42,33 @@ pip install prefect-airbyte
 ```
 
 ### Examples
+#### Create an `AirbyteServer` block and save it
+```python
+from prefect_airbyte.server import AirbyteServer
+
+# running airbyte locally at http://localhost:8000 with default auth
+local_airbyte_server = AirbyteServer()
+
+# running airbyte remotely at http://<someIP>:<somePort> as user `Marvin`
+remote_airbyte_server = AirbyteServer(
+    username="Marvin",
+    password="DontPanic42",
+    server_host="42.42.42.42",
+    server_port="4242"
+)
+
+local_airbyte_server.save("my-local-airbyte-server")
+
+remote_airbyte_server.save("my-remote-airbyte-server")
+
+```
+
 
 #### Trigger a defined connection sync
 ```python
 from prefect import flow
 from prefect_airbyte.connections import trigger_sync
-
+from prefect_airbyte.server import AirbyteServer
 
 @flow
 def example_trigger_sync_flow():
@@ -55,6 +76,7 @@ def example_trigger_sync_flow():
       # Run other tasks and subflows here
 
       trigger_sync(
+            airbyte_server=AirbyteServer.load("my-airbyte-server"),
             connection_id="your-connection-id-to-sync",
             poll_interval_s=3,
             status_updates=True
@@ -83,11 +105,15 @@ example_trigger_sync_flow()
 
 
 #### Export an Airbyte instance's configuration
+
+**NOTE**: The API endpoint corresponding to this task is no longer supported by open-source Airbyte versions as of v0.40.7. Check out the [Octavia CLI docs](https://github.com/airbytehq/airbyte/tree/master/octavia-cli) for more info.
+
 ```python
 import gzip
 
 from prefect import flow, task
 from prefect_airbyte.configuration import export_configuration
+from prefect_airbyte.server import AirbyteServer
 
 @task
 def zip_and_write_somewhere(
@@ -103,9 +129,7 @@ def example_export_configuration_flow(filepath: str):
     # Run other tasks and subflows here
 
     airbyte_config = export_configuration(
-        airbyte_server_host="localhost",
-        airbyte_server_port="8000",
-        airbyte_api_version="v1",
+        airbyte_server=AirbyteServer.load("my-airbyte-server-block")
     )
 
     zip_and_write_somewhere(

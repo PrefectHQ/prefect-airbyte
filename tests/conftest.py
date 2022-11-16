@@ -2,9 +2,16 @@ import pytest
 import respx
 from httpx import Response
 
+from prefect_airbyte.server import AirbyteServer
+
 # connection fixtures / mocks
 
 CONNECTION_ID = "e1b2078f-882a-4f50-9942-cfe34b2d825b"
+
+
+@pytest.fixture
+def airbyte_server():
+    return AirbyteServer()
 
 
 @pytest.fixture
@@ -354,4 +361,21 @@ def mock_successful_config_export_calls(
 
     respx_mock.post(url=f"{base_airbyte_url}/deployment/export/").mock(
         return_value=Response(200, content=airbyte_good_export_configuration_response)
+    )
+
+
+@respx.mock(assert_all_called=True)
+@pytest.fixture
+def mock_config_endpoint_not_found(
+    respx_mock,
+    base_airbyte_url,
+    airbyte_good_health_check_response,
+    airbyte_good_export_configuration_response,
+):
+    respx_mock.get(url=f"{base_airbyte_url}/health/").mock(
+        return_value=Response(200, json=airbyte_good_health_check_response)
+    )
+
+    respx_mock.post(url=f"{base_airbyte_url}/deployment/export/").mock(
+        return_value=Response(404)
     )

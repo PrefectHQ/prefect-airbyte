@@ -1,12 +1,13 @@
 """Tasks for connecting to Airbyte and triggering connection syncs"""
 import uuid
 from asyncio import sleep
+from typing import Optional
+from warnings import warn
 
-from prefect import task
-from prefect.logging.loggers import get_logger
+from prefect import get_run_logger, task
 
 from prefect_airbyte import exceptions as err
-from prefect_airbyte.client import AirbyteClient
+from prefect_airbyte.server import AirbyteServer
 
 # Connection statuses
 CONNECTION_STATUS_ACTIVE = "active"
@@ -22,9 +23,10 @@ JOB_STATUS_PENDING = "pending"
 @task
 async def trigger_sync(
     connection_id: str,
-    airbyte_server_host: str = "localhost",
-    airbyte_server_port: int = "8000",
-    airbyte_api_version: str = "v1",
+    airbyte_server: Optional[AirbyteServer] = None,
+    airbyte_server_host: Optional[str] = None,
+    airbyte_server_port: Optional[int] = None,
+    airbyte_api_version: Optional[str] = None,
     poll_interval_s: int = 15,
     status_updates: bool = False,
     timeout: int = 5,
@@ -43,11 +45,17 @@ async def trigger_sync(
     will only complete when the sync has completed or
     when it receives an error status code from an API call.
 
+    As of `prefect-airbyte==0.1.3`, the kwargs `airbyte_server_host` and
+    `airbyte_server_port` can be replaced by passing an `airbyte_server` block
+    instance to generate the `AirbyteClient`. Using the `airbyte_server` block is
+    preferred, but the individual kwargs remain for backwards compatibility.
+
     Args:
         connection_id: Airbyte connection ID to trigger a sync for.
-        airbyte_server_host: Airbyte instance hostname where connection is configured.
-        airbyte_server_port: Port where Airbyte instance is listening.
-        airbyte_api_version: Version of Airbyte API to use to trigger connection sync.
+        airbyte_server: An `AirbyteServer` block to create an `AirbyteClient`.
+        airbyte_server_host: Airbyte server host to connect to.
+        airbyte_server_port: Airbyte server port to connect to.
+        airbyte_api_version: Airbyte API version to use.
         poll_interval_s: How often to poll Airbyte for sync status.
         status_updates: Whether to log sync job status while polling.
         timeout: The POST request `timeout` for the `httpx.AsyncClient`.
@@ -68,7 +76,7 @@ async def trigger_sync(
         ```python
         from prefect import flow
         from prefect_airbyte.connections import trigger_sync
-
+        from prefect_airbyte.server import AirbyteServer
 
         @flow
         def example_trigger_sync_flow():
@@ -76,13 +84,40 @@ async def trigger_sync(
             # Run other tasks and subflows here
 
             trigger_sync(
+                airbyte_server=AirbyteServer.load("oss-airbyte"),
                 connection_id="your-connection-id-to-sync"
             )
 
         example_trigger_sync_flow()
         ```
     """
-    logger = get_logger()
+    logger = get_run_logger()
+
+    if not airbyte_server:
+        warn(
+            "The use of `airbyte_server_host`, `airbyte_server_port`, and "
+            "`airbyte_api_version` is deprecated and will be removed in a "
+            "future release. Please pass an `airbyte_server` block to this "
+            "task instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
+            airbyte_server = AirbyteServer(
+                server_host=airbyte_server_host or "localhost",
+                server_port=airbyte_server_port or 8000,
+                api_version=airbyte_api_version or "v1",
+            )
+        else:
+            airbyte_server = AirbyteServer()
+    else:
+        if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
+            logger.info(
+                "Ignoring `airbyte_server_host`, `airbyte_api_version`, "
+                "and `airbyte_server_port` because `airbyte_server` block "
+                " was passed. Using API URL from `airbyte_server` block: "
+                f"{airbyte_server.base_url!r}."
+            )
 
     try:
         uuid.UUID(connection_id)
@@ -92,64 +127,62 @@ async def trigger_sync(
             i.e. 32 hex characters, including hyphens."
         )
 
-    # see https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com
-    # /rapidoc-api-docs.html#overview
-    airbyte_base_url = (
-        f"http://{airbyte_server_host}:"
-        f"{airbyte_server_port}/api/{airbyte_api_version}"
-    )
+    async with airbyte_server.get_client(
+        logger=logger, timeout=timeout
+    ) as airbyte_client:
 
-    airbyte = AirbyteClient(logger, airbyte_base_url, timeout=timeout)
-
-    logger.info(
-        f"Getting Airbyte Connection {connection_id}, poll interval "
-        f"{poll_interval_s} seconds, airbyte_base_url {airbyte_base_url}"
-    )
-
-    connection_status = await airbyte.get_connection_status(connection_id)
-
-    if connection_status == CONNECTION_STATUS_ACTIVE:
-        # Trigger manual sync on the Connection ...
-        job_id, job_created_at = await airbyte.trigger_manual_sync_connection(
-            connection_id
+        logger.info(
+            f"Getting Airbyte Connection {connection_id}, poll interval "
+            f"{poll_interval_s} seconds, airbyte_base_url {airbyte_server.base_url}"
         )
 
-        job_status = JOB_STATUS_PENDING
+        connection_status = await airbyte_client.get_connection_status(connection_id)
 
-        while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
-            job_status, job_created_at, job_updated_at = await airbyte.get_job_status(
-                job_id
+        if connection_status == CONNECTION_STATUS_ACTIVE:
+            # Trigger manual sync on the Connection ...
+            (
+                job_id,
+                job_created_at,
+            ) = await airbyte_client.trigger_manual_sync_connection(connection_id)
+
+            job_status = JOB_STATUS_PENDING
+
+            while job_status not in [JOB_STATUS_FAILED, JOB_STATUS_SUCCEEDED]:
+                (
+                    job_status,
+                    job_created_at,
+                    job_updated_at,
+                ) = await airbyte_client.get_job_status(job_id)
+
+                # pending┃running┃incomplete┃failed┃succeeded┃cancelled
+                if job_status == JOB_STATUS_SUCCEEDED:
+                    logger.info(f"Job {job_id} succeeded.")
+                elif job_status == JOB_STATUS_FAILED:
+                    logger.error(f"Job {job_id} failed.")
+                    raise err.AirbyteSyncJobFailed(f"Job {job_id} failed.")
+                else:
+                    if status_updates:
+                        logger.info(job_status)
+                    # wait for next poll interval
+                    await sleep(poll_interval_s)
+
+            return {
+                "connection_id": connection_id,
+                "status": connection_status,
+                "job_status": job_status,
+                "job_created_at": job_created_at,
+                "job_updated_at": job_updated_at,
+            }
+        elif connection_status == CONNECTION_STATUS_INACTIVE:
+            logger.error(
+                f"Connection: {connection_id} is inactive"
+                " - you'll need to enable it in your Airbyte instance"
             )
-
-            # pending┃running┃incomplete┃failed┃succeeded┃cancelled
-            if job_status == JOB_STATUS_SUCCEEDED:
-                logger.info(f"Job {job_id} succeeded.")
-            elif job_status == JOB_STATUS_FAILED:
-                logger.error(f"Job {job_id} failed.")
-                raise err.AirbyteSyncJobFailed(f"Job {job_id} failed.")
-            else:
-                if status_updates:
-                    logger.info(job_status)
-                # wait for next poll interval
-                await sleep(poll_interval_s)
-
-        return {
-            "connection_id": connection_id,
-            "status": connection_status,
-            "job_status": job_status,
-            "job_created_at": job_created_at,
-            "job_updated_at": job_updated_at,
-        }
-    elif connection_status == CONNECTION_STATUS_INACTIVE:
-        logger.error(
-            f"Connection: {connection_id} is inactive"
-            " - you'll need to enable it in your Airbyte instance"
-        )
-        raise err.AirbyteConnectionInactiveException(
-            f"Please enable the Connection {connection_id} in Airbyte instance."
-        )
-    elif connection_status == CONNECTION_STATUS_DEPRECATED:
-        logger.error(f"Connection {connection_id} is deprecated.")
-        raise err.AirbyeConnectionDeprecatedException(
-            f"Connection {connection_id} is deprecated."
-        )
+            raise err.AirbyteConnectionInactiveException(
+                f"Please enable the Connection {connection_id} in Airbyte instance."
+            )
+        elif connection_status == CONNECTION_STATUS_DEPRECATED:
+            logger.error(f"Connection {connection_id} is deprecated.")
+            raise err.AirbyeConnectionDeprecatedException(
+                f"Connection {connection_id} is deprecated."
+            )

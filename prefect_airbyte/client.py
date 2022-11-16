@@ -1,7 +1,7 @@
 """Client for interacting with Airbyte instance"""
-
 import logging
 from typing import Tuple
+from warnings import warn
 
 import httpx
 
@@ -12,15 +12,15 @@ class AirbyteClient:
     """
     Client class used to call API endpoints on an Airbyte server.
 
-    This client assumes that you're using an OSS Airbyte server which does not require
-    an API key to access its a API.
+    This client currently supports username/password authentication as set in `auth`.
 
     For more info, see the [Airbyte docs](https://docs.airbyte.io/api-documentation).
 
     Attributes:
+        airbyte_base_url str: Base API endpoint URL for Airbyte.
+        auth: Username and password for Airbyte API.
         logger: A logger instance used by the client to log messages related to
             API calls.
-        airbyte_base_url str: Base API endpoint URL for Airbyte.
         timeout: The number of seconds to wait before an API call times out.
     """
 
@@ -28,22 +28,19 @@ class AirbyteClient:
         self,
         logger: logging.Logger,
         airbyte_base_url: str = "http://localhost:8000/api/v1",
+        auth: Tuple[str, str] = ("airbyte", "password"),
         timeout: int = 5,
     ):
+        self._closed = False
+        self._started = False
+
         self.airbyte_base_url = airbyte_base_url
+        self.auth = auth
         self.logger = logger
         self.timeout = timeout
-
-    async def _establish_session(self) -> httpx.AsyncClient:
-        """
-        Checks health of the Airbyte server and establishes a session.
-
-        Returns:
-            Session used to communicate with the Airbyte API.
-        """
-        client = httpx.AsyncClient(timeout=self.timeout)
-        await self.check_health_status(client)
-        return client
+        self._client = httpx.AsyncClient(
+            base_url=self.airbyte_base_url, auth=self.auth, timeout=self.timeout
+        )
 
     async def check_health_status(self, client: httpx.AsyncClient) -> bool:
         """
@@ -71,16 +68,6 @@ class AirbyteClient:
         except httpx.HTTPStatusError as e:
             raise err.AirbyteServerNotHealthyException() from e
 
-    async def create_client(self) -> httpx.AsyncClient:
-        """
-        Convenience method for establishing a healthy session with the Airbyte server.
-
-        Returns:
-            Session for interacting with the Airbyte server.
-        """
-        client = await self._establish_session()
-        return client
-
     async def export_configuration(
         self,
     ) -> bytes:
@@ -90,12 +77,17 @@ class AirbyteClient:
         Returns:
             Gzipped Airbyte configuration data.
         """
-        client = await self.create_client()
+        warn(
+            "As of Airbyte v0.40.7-alpha, the Airbyte API no longer supports "
+            "exporting configurations. See the Octavia CLI docs for more info.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
         get_connection_url = self.airbyte_base_url + "/deployment/export/"
 
         try:
-            response = await client.post(get_connection_url)
+            response = await self._client.post(get_connection_url)
             response.raise_for_status()
 
             self.logger.debug("Export configuration response: %s", response)
@@ -103,7 +95,12 @@ class AirbyteClient:
             export_config = response.content
             return export_config
         except httpx.HTTPStatusError as e:
-            raise err.AirbyteExportConfigurationFailed() from e
+            if e.response.status_code == 404:
+                self.logger.error(
+                    "If you are using Airbyte v0.40.7-alpha, there is no longer "
+                    "an API endpoint for exporting configurations."
+                )
+                raise err.AirbyteExportConfigurationFailed() from e
 
     async def get_connection_status(self, connection_id: str) -> str:
         """
@@ -115,13 +112,10 @@ class AirbyteClient:
         Returns:
             The status of the defined Airbyte connection.
         """
-        client = await self.create_client()
-
         get_connection_url = self.airbyte_base_url + "/connections/get/"
 
-        # TODO - Missing auth because Airbyte API currently doesn't yet support auth
         try:
-            response = await client.post(
+            response = await self._client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
 
@@ -149,13 +143,10 @@ class AirbyteClient:
             created_at: Datetime string of when the job was created.
 
         """
-        client = await self.create_client()
-
         get_connection_url = self.airbyte_base_url + "/connections/sync/"
 
-        # TODO - no current authentication methods from Airbyte
         try:
-            response = await client.post(
+            response = await self._client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
             response.raise_for_status()
@@ -184,11 +175,9 @@ class AirbyteClient:
             job_created_at: Datetime string of when the job was created.
             job_updated_at: Datetime string of the when the job was last updated.
         """
-        client = await self.create_client()
-
         get_connection_url = self.airbyte_base_url + "/jobs/get/"
         try:
-            response = await client.post(get_connection_url, json={"id": job_id})
+            response = await self._client.post(get_connection_url, json={"id": job_id})
             response.raise_for_status()
 
             job = response.json()["job"]
@@ -200,3 +189,38 @@ class AirbyteClient:
             if e.response.status_code == 404:
                 raise err.JobNotFoundException(f"Job {job_id} not found.") from e
             raise err.AirbyteServerNotHealthyException() from e
+
+    async def create_client(self) -> httpx.AsyncClient:
+        """Convencience method to create a new httpx.AsyncClient.
+
+        To be removed in favor of using the entire `AirbyteClient` class
+        as a context manager.
+        """
+        warn(
+            "Use of this method will be removed in a future release - "
+            "please use the `AirbyteClient` class as a context manager.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._client
+
+    async def __aenter__(self):
+        """Context manager entry point."""
+        if self._closed:
+            raise RuntimeError(
+                "The client cannot be started again after it has been closed."
+            )
+        if self._started:
+            raise RuntimeError("The client cannot be started more than once.")
+
+        self._started = True
+
+        await self.check_health_status(self._client)
+
+        return self
+
+    async def __aexit__(self, *exc):
+        """Context manager exit point."""
+
+        self._closed = True
+        await self._client.__aexit__()
