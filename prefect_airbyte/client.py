@@ -22,7 +22,6 @@ class AirbyteClient:
         logger: A logger instance used by the client to log messages related to
             API calls.
         timeout: The number of seconds to wait before an API call times out.
-        client: An `httpx.AsyncClient` instance used to make API calls.
     """
 
     def __init__(
@@ -194,11 +193,11 @@ class AirbyteClient:
     async def create_client(self) -> httpx.AsyncClient:
         """Convencience method to create a new httpx.AsyncClient.
 
-        To be deprecated in favor of using the entire `AirbyteClient` class
+        To be removed in favor of using the entire `AirbyteClient` class
         as a context manager.
         """
         warn(
-            "Use of this method will be deprecated in a future release - "
+            "Use of this method will be removed in a future release - "
             "please use the `AirbyteClient` class as a context manager.",
             DeprecationWarning,
             stacklevel=2,

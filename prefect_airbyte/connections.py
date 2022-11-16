@@ -45,7 +45,7 @@ async def trigger_sync(
     will only complete when the sync has completed or
     when it receives an error status code from an API call.
 
-    As of `prefect-airbyte==0.2.0`, the kwargs `airbyte_server_host` and
+    As of `prefect-airbyte==0.1.3`, the kwargs `airbyte_server_host` and
     `airbyte_server_port` can be replaced by passing an `airbyte_server` block
     instance to generate the `AirbyteClient`. Using the `airbyte_server` block is
     preferred, but the individual kwargs remain for backwards compatibility.
