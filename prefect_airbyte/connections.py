@@ -91,11 +91,11 @@ async def trigger_sync(
     logger = get_run_logger()
 
     if not airbyte_server:
-        logger.warning(
-            "Using kwargs `airbyte_server_host` and `airbyte_server_port` will be  "
-            "deprecated. Please pass an `airbyte_server` block to this task instead."
-        )
         if airbyte_server_host or airbyte_server_port:
+            logger.warning(
+                "Using kwargs `airbyte_server_host` and `airbyte_server_port` will be  "
+                "deprecated - pass an `airbyte_server` block to this task instead."
+            )
             airbyte_server = AirbyteServer(
                 server_host=airbyte_server_host or "localhost",
                 server_port=airbyte_server_port or 8000,
