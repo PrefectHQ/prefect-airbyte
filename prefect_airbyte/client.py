@@ -191,6 +191,20 @@ class AirbyteClient:
                 raise err.JobNotFoundException(f"Job {job_id} not found.") from e
             raise err.AirbyteServerNotHealthyException() from e
 
+    async def create_client(self) -> httpx.AsyncClient:
+        """Convencience method to create a new httpx.AsyncClient.
+
+        To be deprecated in favor of using the entire `AirbyteClient` class
+        as a context manager.
+        """
+        warn(
+            "Use of this method will be deprecated in a future release - "
+            "please use the `AirbyteClient` class as a context manager.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._client
+
     async def __aenter__(self):
         """Context manager entry point."""
         if self._closed:
