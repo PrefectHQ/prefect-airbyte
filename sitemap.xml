@@ -2,22 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://PrefectHQ.github.io/prefect-airbyte/</loc>
-         <lastmod>2022-09-08</lastmod>
+         <lastmod>2022-11-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://PrefectHQ.github.io/prefect-airbyte/client/</loc>
-         <lastmod>2022-09-08</lastmod>
+         <lastmod>2022-11-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://PrefectHQ.github.io/prefect-airbyte/configuration/</loc>
-         <lastmod>2022-09-08</lastmod>
+         <lastmod>2022-11-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://PrefectHQ.github.io/prefect-airbyte/connections/</loc>
-         <lastmod>2022-09-08</lastmod>
+         <lastmod>2022-11-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://PrefectHQ.github.io/prefect-airbyte/server/</loc>
+         <lastmod>2022-11-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
