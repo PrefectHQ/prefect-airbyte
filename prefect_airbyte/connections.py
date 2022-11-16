@@ -2,6 +2,7 @@
 import uuid
 from asyncio import sleep
 from typing import Optional
+from warnings import warn
 
 from prefect import get_run_logger, task
 
@@ -93,9 +94,12 @@ async def trigger_sync(
     logger = get_run_logger()
 
     if not airbyte_server:
-        logger.warning(
-            "Using kwargs `airbyte_server_host`, `airbyte_server_port`, `airbyte_api_version` "  # noqa: E501
-            "will be deprecated. Please pass an `airbyte_server` block to this task instead."  # noqa: E501
+        warn(
+            "The use of `airbyte_server_host`, `airbyte_server_port`, and `airbyte_api_version` "  # noqa
+            "is deprecated and will be removed in a future release. Please pass an `airbyte_server` "  # noqa
+            "block to this task instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
         if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
             airbyte_server = AirbyteServer(
@@ -107,9 +111,10 @@ async def trigger_sync(
             airbyte_server = AirbyteServer()
     else:
         if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
-            logger.warning(
+            logger.info(
                 "Ignoring kwargs `airbyte_server_host` and `airbyte_server_port` "
-                "because `airbyte_server` block was passed."
+                "because `airbyte_server` block was passed. Using API URL from "
+                f"`airbyte_server` block: {airbyte_server.base_url!r}."
             )
 
     try:
