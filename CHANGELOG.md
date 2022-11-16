@@ -21,7 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Released on November 16, 2022.
 
-This release introduces breaking changes by changing the default interface for tasks in this collection.
+This release introduces breaking changes by changing the default interface for tasks in this collection. Previously, tasks accepted individual kwargs like `airbyte_server_host` and `airbyte_server_port` that were needed to construct the base url and make API calls. Now that Airbyte supports basic user/password authentication, it made sense to create an `AirbyteServer` block that stores this user auth data and uses it to configure clients. 
+
+We will create an `AirbyteServer` on the fly for users who continue to pass the old kwargs, but print a message that they will eventually be deprecated.
 
 ### Added
 - Airbyte server block to handle client generation and support for NGINX authentication on OSS instances - [#40](https://github.com/PrefectHQ/prefect-airbyte/pull/40)

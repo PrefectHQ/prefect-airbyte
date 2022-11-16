@@ -39,7 +39,7 @@ class AirbyteClient:
         self.auth = auth
         self.logger = logger
         self.timeout = timeout
-        self.client = httpx.AsyncClient(
+        self._client = httpx.AsyncClient(
             base_url=self.airbyte_base_url, auth=self.auth, timeout=self.timeout
         )
 
@@ -88,7 +88,7 @@ class AirbyteClient:
         get_connection_url = self.airbyte_base_url + "/deployment/export/"
 
         try:
-            response = await self.client.post(get_connection_url)
+            response = await self._client.post(get_connection_url)
             response.raise_for_status()
 
             self.logger.debug("Export configuration response: %s", response)
@@ -116,7 +116,7 @@ class AirbyteClient:
         get_connection_url = self.airbyte_base_url + "/connections/get/"
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
 
@@ -147,7 +147,7 @@ class AirbyteClient:
         get_connection_url = self.airbyte_base_url + "/connections/sync/"
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 get_connection_url, json={"connectionId": connection_id}
             )
             response.raise_for_status()
@@ -178,7 +178,7 @@ class AirbyteClient:
         """
         get_connection_url = self.airbyte_base_url + "/jobs/get/"
         try:
-            response = await self.client.post(get_connection_url, json={"id": job_id})
+            response = await self._client.post(get_connection_url, json={"id": job_id})
             response.raise_for_status()
 
             job = response.json()["job"]
@@ -202,7 +202,7 @@ class AirbyteClient:
 
         self._started = True
 
-        await self.check_health_status(self.client)
+        await self.check_health_status(self._client)
 
         return self
 
@@ -210,4 +210,4 @@ class AirbyteClient:
         """Context manager exit point."""
 
         self._closed = True
-        await self.client.__aexit__()
+        await self._client.__aexit__()

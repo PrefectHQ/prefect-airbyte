@@ -17,6 +17,7 @@ class AirbyteServer(Block):
         server_host: Hostname for Airbyte API.
         server_port: Port for Airbyte API.
         api_version: Version of Airbyte API to use.
+        use_ssl: Whether to use a secure url for calls to the Airbyte API.
 
     Example:
         Create an `AirbyteServer` block for an Airbyte instance running on localhost:
@@ -42,26 +43,22 @@ class AirbyteServer(Block):
     username: str = Field(
         default="airbyte",
         description="Username to authenticate with Airbyte API.",
-        title="Username",
     )
 
     password: SecretStr = Field(
         default=SecretStr("password"),
         description="Password to authenticate with Airbyte API.",
-        title="Password",
     )
 
     server_host: str = Field(
         default="localhost",
         description="Host address of Airbyte server.",
         example="127.0.0.1",
-        title="Server Host",
     )
 
     server_port: int = Field(
         default=8000,
         description="Port number of Airbyte server.",
-        title="Server Port",
     )
 
     api_version: str = Field(

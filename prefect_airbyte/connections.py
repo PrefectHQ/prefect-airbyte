@@ -25,6 +25,7 @@ async def trigger_sync(
     airbyte_server: Optional[AirbyteServer] = None,
     airbyte_server_host: Optional[str] = None,
     airbyte_server_port: Optional[int] = None,
+    airbyte_api_version: Optional[str] = None,
     poll_interval_s: int = 15,
     status_updates: bool = False,
     timeout: int = 5,
@@ -53,6 +54,7 @@ async def trigger_sync(
         airbyte_server: An `AirbyteServer` block to create an `AirbyteClient`.
         airbyte_server_host: Airbyte server host to connect to.
         airbyte_server_port: Airbyte server port to connect to.
+        airbyte_api_version: Airbyte API version to use.
         poll_interval_s: How often to poll Airbyte for sync status.
         status_updates: Whether to log sync job status while polling.
         timeout: The POST request `timeout` for the `httpx.AsyncClient`.
@@ -91,19 +93,20 @@ async def trigger_sync(
     logger = get_run_logger()
 
     if not airbyte_server:
-        if airbyte_server_host or airbyte_server_port:
-            logger.warning(
-                "Using kwargs `airbyte_server_host` and `airbyte_server_port` will be  "
-                "deprecated - pass an `airbyte_server` block to this task instead."
-            )
+        logger.warning(
+            "Using kwargs `airbyte_server_host`, `airbyte_server_port`, `airbyte_api_version` "  # noqa: E501
+            "will be deprecated. Please pass an `airbyte_server` block to this task instead."  # noqa: E501
+        )
+        if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
             airbyte_server = AirbyteServer(
                 server_host=airbyte_server_host or "localhost",
                 server_port=airbyte_server_port or 8000,
+                api_version=airbyte_api_version or "v1",
             )
         else:
             airbyte_server = AirbyteServer()
     else:
-        if airbyte_server_host or airbyte_server_port:
+        if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
             logger.warning(
                 "Ignoring kwargs `airbyte_server_host` and `airbyte_server_port` "
                 "because `airbyte_server` block was passed."
