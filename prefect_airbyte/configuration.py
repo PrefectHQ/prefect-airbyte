@@ -90,9 +90,10 @@ async def export_configuration(
     else:
         if any([airbyte_server_host, airbyte_server_port, airbyte_api_version]):
             logger.info(
-                "Ignoring kwargs `airbyte_server_host` and `airbyte_server_port` "
-                "because `airbyte_server` block was passed. Using API URL from "
-                f"`airbyte_server` block: {airbyte_server.base_url!r}."
+                "Ignoring `airbyte_server_host`, `airbyte_api_version`, "
+                "and `airbyte_server_port` because `airbyte_server` block "
+                " was passed. Using API URL from `airbyte_server` block: "
+                f"{airbyte_server.base_url!r}."
             )
 
     async with airbyte_server.get_client(
