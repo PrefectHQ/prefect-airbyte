@@ -72,9 +72,10 @@ async def export_configuration(
 
     if not airbyte_server:
         warn(
-            "The use of `airbyte_server_host`, `airbyte_server_port`, and `airbyte_api_version` "  # noqa
-            "is deprecated and will be removed in a future release. Please pass an `airbyte_server` "  # noqa
-            "block to this task instead.",
+            "The use of `airbyte_server_host`, `airbyte_server_port`, and "
+            "`airbyte_api_version` is deprecated and will be removed in a "
+            "future release. Please pass an `airbyte_server` block to this "
+            "task instead.",
             DeprecationWarning,
             stacklevel=2,
         )
