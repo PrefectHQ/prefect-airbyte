@@ -20,19 +20,10 @@ class AirbyteServer(Block):
         use_ssl: Whether to use a secure url for calls to the Airbyte API.
 
     Example:
-        Create an `AirbyteServer` block for an Airbyte instance running on localhost:
         ```python
-        from prefect import flow
-        from prefect_airbyte.connection import trigger_sync
         from prefect_airbyte.server import AirbyteServer
 
-        @flow
-        def airbyte_orchestration_flow():
-            airbyte_server = AirbyteServer()
-            trigger_sync(
-                airbyte_server=airbyte_server,
-                connection_id="my_connection_id",
-            )
+        server = AirbyteServer.load("BLOCK_NAME")
         ```
     """
 
