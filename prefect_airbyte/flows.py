@@ -6,7 +6,7 @@ from prefect_airbyte.connections import AirbyteConnection, AirbyteSyncResult
 
 
 @flow
-async def run_airbyte_connection_sync(
+async def run_connection_sync(
     airbyte_connection: AirbyteConnection,
 ) -> AirbyteSyncResult:
     """A flow that triggers a sync of an Airbyte connection and waits for it to complete.
@@ -24,7 +24,7 @@ async def run_airbyte_connection_sync(
         from prefect import flow
         from prefect_airbyte.server import AirbyteServer
         from prefect_airbyte.connections import AirbyteConnection
-        from prefect_airbyte.flows import run_airbyte_connection_sync
+        from prefect_airbyte.flows import run_connection_sync
 
         airbyte_server = AirbyteServer(
             server_host="localhost",
@@ -40,7 +40,7 @@ async def run_airbyte_connection_sync(
         def airbyte_sync_flow():
             # do some things
 
-            airbyte_sync_result = run_airbyte_connection_sync(
+            airbyte_sync_result = run_connection_sync(
                 airbyte_connection=connection
             )
             print(airbyte_sync_result.records_synced)

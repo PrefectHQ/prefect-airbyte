@@ -44,10 +44,10 @@ class AirbyteClient:
 
     async def check_health_status(self, client: httpx.AsyncClient) -> bool:
         """
-        Checks the health status of an AirbyteInstance.
+        Checks the health status of an Airbyte instance.
 
         Args:
-            Session used to interact with the Airbyte API.
+            client: `httpx.AsyncClient` used to interact with the Airbyte API.
 
         Returns:
             True if the server is healthy. False otherwise.
@@ -73,6 +73,8 @@ class AirbyteClient:
     ) -> bytes:
         """
         Triggers an export of Airbyte configuration.
+
+        **Note**: As of Airbyte v0.40.7-alpha, this endpoint no longer exists.
 
         Returns:
             Gzipped Airbyte configuration data.
@@ -166,6 +168,8 @@ class AirbyteClient:
     async def get_job_status(self, job_id: str) -> Tuple[str, int, int]:
         """
         Gets the status of an Airbyte connection sync job.
+
+        **Note**: To be deprecated in favor of `AirbyteClient.get_job_info`.
 
         Args:
             job_id: ID of the Airbyte job to check.

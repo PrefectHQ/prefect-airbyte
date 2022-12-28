@@ -44,12 +44,15 @@ async def trigger_sync(
     timeout: int = 5,
 ) -> Dict[str, Any]:
     """Prefect Task for triggering an Airbyte connection sync.
+
     *It is assumed that the user will have previously configured
     a Source & Destination into a Connection.*
     e.g. MySql -> CSV
+
     An invocation of `trigger_sync` will attempt to start a sync job for
     the specified `connection_id` representing the Connection in
     Airbyte.
+
     `trigger_sync` will poll Airbyte Server for the Connection status and
     will only complete when the sync has completed or
     when it receives an error status code from an API call.
@@ -161,8 +164,8 @@ async def trigger_sync(
                     job_status == JOB_STATUS_FAILED
                     or job_status == JOB_STATUS_CANCELLED
                 ):
-                    logger.error(f"Job {job_id} failed.")
-                    raise err.AirbyteSyncJobFailed(f"Job {job_id} failed.")
+                    logger.error(f"Job {job_id} {job_status}.")
+                    raise err.AirbyteSyncJobFailed(f"Job {job_id} {job_status}.")
                 else:
                     if status_updates:
                         logger.info(job_status)
@@ -310,7 +313,7 @@ class AirbyteConnection(JobBlock):
     )
 
     @sync_compatible
-    async def trigger(self):
+    async def trigger(self) -> AirbyteSync:
         """Trigger a sync of the defined Airbyte connection.
 
         Returns:
