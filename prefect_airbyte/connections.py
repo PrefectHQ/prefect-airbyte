@@ -282,7 +282,23 @@ class AirbyteSync(JobRun):
 
 
 class AirbyteConnection(JobBlock):
-    """`JobBlock` representing an existing Airbyte connection."""
+    """`JobBlock` representing an existing Airbyte connection.
+
+    Attributes:
+        airbyte_server: `AirbyteServer` block representing the Airbyte instance
+            where the Airbyte connection is defined.
+        connection_id: UUID of the Airbyte Connection to trigger.
+        poll_interval_s: Time in seconds between status checks of the Airbyte sync job.
+        status_updates: Whether to log job status on each poll of the Airbyte sync job.
+        timeout: Timeout in seconds for requests made by `httpx.AsyncClient`.
+
+    Example:
+        ```python
+        from prefect_airbyte import AirbyteConnection
+
+        airbyte_connection = AirbyteConnection.load("BLOCK_NAME")
+        ```
+    """
 
     airbyte_server: AirbyteServer = Field(
         default=...,
