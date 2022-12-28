@@ -210,7 +210,7 @@ class AirbyteSync(JobRun):
     def __init__(self, airbyte_connection: "AirbyteConnection", job_id: int):
         self.airbyte_connection: "AirbyteConnection" = airbyte_connection
         self.job_id: int = job_id
-        self.records_synced: int = 0
+        self._records_synced: int = 0
 
     @sync_compatible
     async def wait_for_completion(self):
@@ -231,11 +231,9 @@ class AirbyteSync(JobRun):
 
                 job_status = job_info["job"]["status"]
 
-                # "recordsSynced" key is only present if the job has synced records
-                if "recordsSynced" in job_info["attempts"][-1]["attempt"]:
-                    self.records_synced = job_info["attempts"][-1]["attempt"][
-                        "recordsSynced"
-                    ]
+                self._records_synced = job_info["attempts"][-1]["attempt"].get(
+                    "recordsSynced", 0
+                )
 
                 # pending┃running┃failed┃succeeded┃cancelled
                 if job_status == JOB_STATUS_SUCCEEDED:
@@ -270,7 +268,7 @@ class AirbyteSync(JobRun):
                 created_at=job_created_at,
                 job_id=self.job_id,
                 job_status=job_status,
-                records_synced=self.records_synced,
+                records_synced=self._records_synced,
                 updated_at=job_updated_at,
             )
 
@@ -291,6 +289,15 @@ class AirbyteConnection(JobBlock):
         from prefect_airbyte import AirbyteConnection
 
         airbyte_connection = AirbyteConnection.load("BLOCK_NAME")
+
+        # trigger the Airbyte connection sync
+        airbyte_sync = await airbyte_connection.trigger()
+
+        # wait for the Airbyte sync to complete
+        await airbyte_sync.wait_for_completion()
+
+        # fetch the result of the Airbyte sync
+        airbyte_sync_result = await airbyte_sync.fetch_result()
         ```
     """
 
@@ -359,16 +366,12 @@ class AirbyteConnection(JobBlock):
                 )
 
             elif connection_status == CONNECTION_STATUS_INACTIVE:
-                self.logger.error(
-                    f"Connection: {self.connection_id!r} is inactive"
-                    " - you'll need to enable it in your Airbyte instance"
-                )
                 raise err.AirbyteConnectionInactiveException(
+                    f"Connection: {self.connection_id!r} is inactive"
                     f"Please enable the connection {self.connection_id!r} "
                     "in your Airbyte instance."
                 )
             elif connection_status == CONNECTION_STATUS_DEPRECATED:
-                self.logger.error(f"Connection {self.connection_id!r} is deprecated.")
                 raise err.AirbyeConnectionDeprecatedException(
                     f"Connection {self.connection_id!r} is deprecated."
                 )

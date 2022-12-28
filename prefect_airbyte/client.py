@@ -169,7 +169,7 @@ class AirbyteClient:
         """
         Gets the status of an Airbyte connection sync job.
 
-        **Note**: To be deprecated in favor of `AirbyteClient.get_job_info`.
+        **Note**: Deprecated in favor of `AirbyteClient.get_job_info`.
 
         Args:
             job_id: ID of the Airbyte job to check.
@@ -179,6 +179,16 @@ class AirbyteClient:
             job_created_at: Datetime string of when the job was created.
             job_updated_at: Datetime string of the when the job was last updated.
         """
+        warn(
+            "`AirbyteClient.get_job_status` is deprecated and will be removed in "
+            "a future release. If you are using this client method directly, please "
+            "use the `AirbyteClient.get_job_info` method instead. If you are"
+            "seeing this warning while using the `trigger_sync` task, please "
+            "define an `AirbyteConnection` and use `run_connection_sync` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         get_connection_url = self.airbyte_base_url + "/jobs/get/"
         try:
             response = await self._client.post(get_connection_url, json={"id": job_id})
