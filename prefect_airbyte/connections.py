@@ -274,7 +274,7 @@ class AirbyteSync(JobRun):
 
 
 class AirbyteConnection(JobBlock):
-    """`JobBlock` representing an existing Airbyte connection.
+    """A block representing an existing Airbyte connection.
 
     Attributes:
         airbyte_server: `AirbyteServer` block representing the Airbyte instance
@@ -307,7 +307,7 @@ class AirbyteConnection(JobBlock):
     airbyte_server: AirbyteServer = Field(
         default=...,
         description=(
-            "`AirbyteServer` block representing the Airbyte instance "
+            "AirbyteServer block representing the Airbyte instance "
             "where the Airbyte connection is defined."
         ),
     )
@@ -329,7 +329,7 @@ class AirbyteConnection(JobBlock):
 
     timeout: int = Field(
         default=5,
-        description="Timeout in seconds for requests made by `httpx.AsyncClient`.",
+        description="Timeout in seconds for requests made by httpx.AsyncClient.",
     )
 
     @sync_compatible
