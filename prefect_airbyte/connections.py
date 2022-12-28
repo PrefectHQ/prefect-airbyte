@@ -291,13 +291,13 @@ class AirbyteConnection(JobBlock):
         airbyte_connection = AirbyteConnection.load("BLOCK_NAME")
 
         # trigger the Airbyte connection sync
-        airbyte_sync = await airbyte_connection.trigger()
+        airbyte_sync = airbyte_connection.trigger()
 
         # wait for the Airbyte sync to complete
-        await airbyte_sync.wait_for_completion()
+        airbyte_sync.wait_for_completion()
 
         # fetch the result of the Airbyte sync
-        airbyte_sync_result = await airbyte_sync.fetch_result()
+        airbyte_sync_result = airbyte_sync.fetch_result()
         ```
     """
 
