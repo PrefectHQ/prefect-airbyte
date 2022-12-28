@@ -33,7 +33,7 @@ def find_module_blocks():
 
 def insert_blocks_catalog(generated_file):
     module_blocks = find_module_blocks()
-    generated_file.write("```\n## Blocks Catalog\n")
+    generated_file.write("## Blocks Catalog\n")
     generated_file.write(
         dedent(
             f"""

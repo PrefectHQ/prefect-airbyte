@@ -168,7 +168,7 @@ custom_run_connection_sync = run_connection_sync.with_options(
     )
  
  some_airbyte_flow()
- ```
+```
 
 For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
 
