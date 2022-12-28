@@ -41,6 +41,8 @@ Install `prefect-airbyte`
 pip install prefect-airbyte
 ```
 
+A list of available blocks in `prefect-airbyte` and their setup instructions can be found [here](https://PrefectHQ.github.io/prefect-airbyte/#blocks-catalog/).
+
 ### Examples
 #### Create an `AirbyteServer` block and save it
 ```python
@@ -146,6 +148,30 @@ def example_export_configuration_flow(filepath: str):
 if __name__ == "__main__":
     example_export_configuration_flow('*://**/my_destination.gz')
 ```
+#### Use `with_options` to customize options on any existing task or flow
+
+```python
+from prefect import flow
+from prefect_airbyte.connections import AirbyteConnection
+from prefect_airbyte.flows import run_connection_sync
+
+custom_run_connection_sync = run_connection_sync.with_options(
+    name="Custom Airbyte Sync Flow",
+    retries=2,
+    retry_delay_seconds=10,
+)
+ 
+ @flow
+ def some_airbyte_flow():
+    custom_run_connection_sync(
+        airbyte_connection=AirbyteConnection.load("my-airbyte-connection-block")
+    )
+ 
+ some_airbyte_flow()
+```
+
+For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
+
 
 ## Resources
 
@@ -153,16 +179,24 @@ If you encounter and bugs while using `prefect-airbyte`, feel free to open an is
 
 If you have any questions or issues while using `prefect-airbyte`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack)
 
-Feel free to ⭐️ or watch [`prefect-airbyte`](https://github.com/PrefectHQ/prefect-airbyte) for updates too!
+Feel free to star or watch [`prefect-airbyte`](https://github.com/PrefectHQ/prefect-airbyte) for updates too!
 
-## Development
+## Contribute
 
-If you'd like to install a version of `prefect-airbyte` for development, first clone the repository and then perform an editable install with `pip`:
-
-```bash
-git clone https://github.com/PrefectHQ/prefect-airbyte.git
-
-cd prefect-airbyte/
-
+If you'd like to help contribute to fix an issue or add a feature to `prefect-airbyte`, please [propose changes through a pull request from a fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+ 
+### Contribution Steps:
+1. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo#forking-a-repository)
+2. [Clone the forked repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository)
+3. Install the repository and its dependencies:
+```
 pip install -e ".[dev]"
 ```
+4. Make desired changes.
+5. Add tests.
+6. Insert an entry to [CHANGELOG.md](https://github.com/PrefectHQ/prefect-airbyte/blob/main/CHANGELOG.md)
+7. Install `pre-commit` to perform quality checks prior to commit:
+```
+ pre-commit install
+ ```
+8. `git commit`, `git push`, and create a pull request.

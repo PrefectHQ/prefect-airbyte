@@ -4,6 +4,8 @@ Welcome to your new Prefect collection! Feel free to modify this README to fit t
 
 ## Getting Started
 
+Now that you've bootstrapped a project, follow the steps below to get started developing your Prefect Collection!
+
 ### Python setup
 
 Requires an installation of Python 3.7+
@@ -11,12 +13,6 @@ Requires an installation of Python 3.7+
 We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.
 
 ### GitHub setup
-
-Generate a Prefect Collection project in the terminal:
-
-```bash
-cookiecutter https://github.com/PrefectHQ/prefect-collection-template
-```
 
 Create a Git respoitory for the newly generated collection and create the first commit:
 
