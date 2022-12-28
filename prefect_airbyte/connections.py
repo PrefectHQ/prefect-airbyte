@@ -301,6 +301,9 @@ class AirbyteConnection(JobBlock):
         ```
     """
 
+    _block_type_name = "Airbyte Connection"
+    _logo_url = "https://images.ctfassets.net/zscdif0zqppk/6gm7wsC7ANnKYQsm7oiSYz/aac1ad5e054d35d9e24af8d6ed3aed5f/59758427?h=250"  # noqa: E501
+
     airbyte_server: AirbyteServer = Field(
         default=...,
         description=(
