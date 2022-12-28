@@ -1,6 +1,6 @@
 """Client for interacting with Airbyte instance"""
 import logging
-from typing import Tuple
+from typing import Any, Dict, Tuple
 from warnings import warn
 
 import httpx
@@ -44,10 +44,10 @@ class AirbyteClient:
 
     async def check_health_status(self, client: httpx.AsyncClient) -> bool:
         """
-        Checks the health status of an AirbyteInstance.
+        Checks the health status of an Airbyte instance.
 
         Args:
-            Session used to interact with the Airbyte API.
+            client: `httpx.AsyncClient` used to interact with the Airbyte API.
 
         Returns:
             True if the server is healthy. False otherwise.
@@ -73,6 +73,8 @@ class AirbyteClient:
     ) -> bytes:
         """
         Triggers an export of Airbyte configuration.
+
+        **Note**: As of Airbyte v0.40.7-alpha, this endpoint no longer exists.
 
         Returns:
             Gzipped Airbyte configuration data.
@@ -163,9 +165,11 @@ class AirbyteClient:
 
             raise err.AirbyteServerNotHealthyException() from e
 
-    async def get_job_status(self, job_id: str) -> Tuple[str, str, str]:
+    async def get_job_status(self, job_id: str) -> Tuple[str, int, int]:
         """
         Gets the status of an Airbyte connection sync job.
+
+        **Note**: Deprecated in favor of `AirbyteClient.get_job_info`.
 
         Args:
             job_id: ID of the Airbyte job to check.
@@ -175,6 +179,16 @@ class AirbyteClient:
             job_created_at: Datetime string of when the job was created.
             job_updated_at: Datetime string of the when the job was last updated.
         """
+        warn(
+            "`AirbyteClient.get_job_status` is deprecated and will be removed in "
+            "a future release. If you are using this client method directly, please "
+            "use the `AirbyteClient.get_job_info` method instead. If you are"
+            "seeing this warning while using the `trigger_sync` task, please "
+            "define an `AirbyteConnection` and use `run_connection_sync` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         get_connection_url = self.airbyte_base_url + "/jobs/get/"
         try:
             response = await self._client.post(get_connection_url, json={"id": job_id})
@@ -185,6 +199,28 @@ class AirbyteClient:
             job_created_at = job["createdAt"]
             job_updated_at = job["updatedAt"]
             return job_status, job_created_at, job_updated_at
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise err.JobNotFoundException(f"Job {job_id} not found.") from e
+            raise err.AirbyteServerNotHealthyException() from e
+
+    async def get_job_info(self, job_id: str) -> Dict[str, Any]:
+        """
+        Gets the full API response for a given Airbyte Job ID.
+
+        Args:
+            job_id: The ID of the Airbyte job to retrieve information on.
+
+        Returns:
+            Dict of the full API response for the given job ID.
+        """
+        get_connection_url = self.airbyte_base_url + "/jobs/get/"
+        try:
+            response = await self._client.post(get_connection_url, json={"id": job_id})
+            response.raise_for_status()
+
+            return response.json()
+
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
                 raise err.JobNotFoundException(f"Job {job_id} not found.") from e

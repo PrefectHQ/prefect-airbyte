@@ -18,7 +18,7 @@
 
 ## Welcome!
 
-`prefect-airbyte` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows to trigger Airbyte syncs or export your connector configurations.
+`prefect-airbyte` is a collection of prebuilt Prefect tasks and flows that can be used to quickly construct Prefect flows to interact with [Airbyte](https://airbyte.io/).
 
 ## Getting Started
 
@@ -67,22 +67,28 @@ remote_airbyte_server.save("my-remote-airbyte-server")
 #### Trigger a defined connection sync
 ```python
 from prefect import flow
-from prefect_airbyte.connections import trigger_sync
 from prefect_airbyte.server import AirbyteServer
+from prefect_airbyte.connections import AirbyteConnection
+from prefect_airbyte.flows import run_connection_sync
+
+server = AirbyteServer(server_host="localhost", server_port=8000)
+
+connection = AirbyteConnection(
+    airbyte_server=server,
+    connection_id="e1b2078f-882a-4f50-9942-cfe34b2d825b",
+    status_updates=True,
+)
 
 @flow
-def example_trigger_sync_flow():
+def airbyte_syncs():
+    # do some setup
 
-      # Run other tasks and subflows here
+    sync_result = run_connection_sync(
+        airbyte_connection=connection,
+    )
 
-      trigger_sync(
-            airbyte_server=AirbyteServer.load("my-airbyte-server"),
-            connection_id="your-connection-id-to-sync",
-            poll_interval_s=3,
-            status_updates=True
-      )
-
-example_trigger_sync_flow()
+    # do some other things, like trigger DBT based on number of records synced
+    print(f'Number of Records Synced: {sync_result.records_synced}')
 ```
 
 ```console

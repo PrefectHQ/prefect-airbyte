@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## 0.2.0 
+
+Released on December 28, 2022.
+
+### Added
+- `AirbyteConnection` block to represent a connection to trigger in Airbyte - [#44](https://github.com/PrefectHQ/prefect-airbyte/pull/44)
+- `AirbyteSync` block to represent a sync job triggered within Airbyte - [#44](https://github.com/PrefectHQ/prefect-airbyte/pull/44)
+- `run_connection_sync` flow to trigger a sync job for a given connection - [#44](https://github.com/PrefectHQ/prefect-airbyte/pull/44)
+- `AirbyteClient.get_job_info` method to retrieve bulk information about a job - [#44](https://github.com/PrefectHQ/prefect-airbyte/pull/44)
+### Fixed
+- Case in `trigger_sync` task where the cancelling the job would cause an infinite loop - [#44](https://github.com/PrefectHQ/prefect-airbyte/pull/44)
+
 ## 0.1.3
 
 Released on November 16, 2022.

@@ -1,12 +1,19 @@
 import pytest
 import respx
 from httpx import Response
+from prefect.testing.utilities import prefect_test_harness
 
+from prefect_airbyte.connections import AirbyteConnection
 from prefect_airbyte.server import AirbyteServer
 
-# connection fixtures / mocks
 
-CONNECTION_ID = "e1b2078f-882a-4f50-9942-cfe34b2d825b"
+@pytest.fixture(scope="session", autouse=True)
+def prefect_db():
+    """
+    Sets up test harness for temporary DB during test runs.
+    """
+    with prefect_test_harness():
+        yield
 
 
 @pytest.fixture
@@ -15,9 +22,19 @@ def airbyte_server():
 
 
 @pytest.fixture
-def airbyte_trigger_sync_response() -> dict:
+def connection_id():
+    return "e1b2078f-882a-4f50-9942-cfe34b2d825b"
+
+
+@pytest.fixture
+def airbyte_connection(airbyte_server, connection_id):
+    return AirbyteConnection(airbyte_server=airbyte_server, connection_id=connection_id)
+
+
+@pytest.fixture
+def airbyte_trigger_sync_response(connection_id) -> dict:
     return {
-        "connectionId": CONNECTION_ID,
+        "connectionId": connection_id,
         "status": "active",
         "job": {"id": 45, "createdAt": 1650311569, "updatedAt": 1650311585},
     }
@@ -34,9 +51,9 @@ def airbyte_bad_health_check_response() -> dict:
 
 
 @pytest.fixture
-def airbyte_get_connection_response_json() -> dict:
+def airbyte_get_connection_response_json(connection_id) -> dict:
     return {
-        "connectionId": CONNECTION_ID,
+        "connectionId": connection_id,
         "name": "File <> Snowflake Demo",
         "namespaceDefinition": "destination",
         "namespaceFormat": "${SOURCE_NAMESPACE}",
@@ -109,12 +126,12 @@ def airbyte_get_connection_not_found():
 
 
 @pytest.fixture
-def airbyte_base_job_status_response() -> dict:
+def airbyte_base_job_status_response(connection_id) -> dict:
     return {
         "job": {
             "id": 45,
             "configType": "sync",
-            "configId": CONNECTION_ID,
+            "configId": connection_id,
             "createdAt": 1650644844,
             "updatedAt": 1650644844,
             "status": None,
@@ -126,18 +143,57 @@ def airbyte_base_job_status_response() -> dict:
 @pytest.fixture
 def airbyte_get_good_job_status_response(airbyte_base_job_status_response) -> dict:
     airbyte_base_job_status_response["job"]["status"] = "succeeded"
+    airbyte_base_job_status_response["attempts"].append(
+        {
+            "attempt": {
+                "id": 0,
+                "status": "succeeded",
+                "createdAt": 0,
+                "updatedAt": 0,
+                "endedAt": 0,
+                "bytesSynced": 0,
+                "recordsSynced": 0,
+            }
+        }
+    )
     return airbyte_base_job_status_response
 
 
 @pytest.fixture
 def airbyte_get_pending_job_status_response(airbyte_base_job_status_response) -> dict:
     airbyte_base_job_status_response["job"]["status"] = "pending"
+    airbyte_base_job_status_response["attempts"].append(
+        {
+            "attempt": {
+                "id": 0,
+                "status": "pending",
+                "createdAt": 0,
+                "updatedAt": 0,
+                "endedAt": 0,
+                "bytesSynced": 0,
+                "recordsSynced": 0,
+            }
+        }
+    )
     return airbyte_base_job_status_response
 
 
 @pytest.fixture
 def airbyte_get_failed_job_status_response(airbyte_base_job_status_response) -> dict:
     airbyte_base_job_status_response["job"]["status"] = "failed"
+    airbyte_base_job_status_response["attempts"].append(
+        {
+            "attempt": {
+                "id": 0,
+                "status": "failed",
+                "createdAt": 0,
+                "updatedAt": 0,
+                "endedAt": 0,
+                "bytesSynced": 0,
+                "recordsSynced": 0,
+            }
+        }
+    )
     return airbyte_base_job_status_response
 
 
@@ -288,7 +344,6 @@ def mock_cancelled_connection_sync_calls(
     respx_mock,
     base_airbyte_url,
     airbyte_good_health_check_response,
-    airbyte_get_good_job_status_response,
     airbyte_trigger_sync_response,
     airbyte_get_connection_response_json,
     airbyte_get_pending_job_status_response,
@@ -310,12 +365,12 @@ def mock_cancelled_connection_sync_calls(
 
     respx_mock.post(
         url=f"{base_airbyte_url}/jobs/get/",
-        json={"id": airbyte_get_good_job_status_response["job"]["id"]},
+        json={"id": airbyte_get_pending_job_status_response["job"]["id"]},
     ).mock(return_value=Response(200, json=airbyte_get_pending_job_status_response))
 
     respx_mock.post(
         url=f"{base_airbyte_url}/jobs/get/",
-        json={"id": airbyte_get_good_job_status_response["job"]["id"]},
+        json={"id": airbyte_get_failed_job_status_response["job"]["id"]},
     ).mock(return_value=Response(200, json=airbyte_get_failed_job_status_response))
 
 
@@ -337,9 +392,6 @@ def mock_inactive_sync_calls(
         url=f"{base_airbyte_url}/connections/get/",
         json={"connectionId": airbyte_get_connection_response_json["connectionId"]},
     ).mock(return_value=Response(200, json=airbyte_get_connection_response_json))
-
-
-# configuration fixtures / mocks
 
 
 @pytest.fixture
