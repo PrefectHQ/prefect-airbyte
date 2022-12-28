@@ -88,7 +88,7 @@ def airbyte_syncs():
     )
 
     # do some other things, like trigger DBT based on number of records synced
-    print(f'{sync_result.records_synced=}')
+    print(f'Number of Records Synced: {sync_result.records_synced}')
 ```
 
 ```console

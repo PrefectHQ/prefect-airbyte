@@ -48,6 +48,12 @@ async def run_connection_sync(
             # do some other things, like trigger DBT based on number of new raw records
         ```
     """
+
+    # TODO: refactor block method calls to avoid using <sync_compatible_method>.aio
+    # we currently need to do this because of the deadlock caused by calling
+    # a sync task within an async flow
+    # see [this issue](https://github.com/PrefectHQ/prefect/issues/7551)
+
     airbyte_sync = await task(airbyte_connection.trigger.aio)(airbyte_connection)
 
     await task(airbyte_sync.wait_for_completion.aio)(airbyte_sync)

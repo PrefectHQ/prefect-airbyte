@@ -160,10 +160,7 @@ async def trigger_sync(
                 # pending┃running┃incomplete┃failed┃succeeded┃cancelled
                 if job_status == JOB_STATUS_SUCCEEDED:
                     logger.info(f"Job {job_id} succeeded.")
-                elif (
-                    job_status == JOB_STATUS_FAILED
-                    or job_status == JOB_STATUS_CANCELLED
-                ):
+                elif job_status in [JOB_STATUS_FAILED, JOB_STATUS_CANCELLED]:
                     logger.error(f"Job {job_id} {job_status}.")
                     raise err.AirbyteSyncJobFailed(f"Job {job_id} {job_status}.")
                 else:
@@ -210,7 +207,7 @@ class AirbyteSyncResult(BaseModel):
 class AirbyteSync(JobRun):
     """A `JobRun` representing an Airbyte sync job."""
 
-    def __init__(self, airbyte_connection: "AirbyteConnection", job_id: str):
+    def __init__(self, airbyte_connection: "AirbyteConnection", job_id: int):
         self.airbyte_connection: "AirbyteConnection" = airbyte_connection
         self.job_id: int = job_id
         self.records_synced: int = 0
@@ -243,10 +240,7 @@ class AirbyteSync(JobRun):
                 # pending┃running┃failed┃succeeded┃cancelled
                 if job_status == JOB_STATUS_SUCCEEDED:
                     self.logger.info(f"Job {self.job_id} succeeded.")
-                elif (
-                    job_status == JOB_STATUS_FAILED
-                    or job_status == JOB_STATUS_CANCELLED
-                ):
+                elif job_status in [JOB_STATUS_FAILED, JOB_STATUS_CANCELLED]:
                     self.logger.error(f"Job {self.job_id} {job_status}.")
                     raise err.AirbyteSyncJobFailed(f"Job {self.job_id} {job_status}.")
                 else:
