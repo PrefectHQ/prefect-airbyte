@@ -1,6 +1,6 @@
 """Client for interacting with Airbyte instance"""
 import logging
-from typing import Tuple
+from typing import Any, Dict, Tuple
 from warnings import warn
 
 import httpx
@@ -163,7 +163,7 @@ class AirbyteClient:
 
             raise err.AirbyteServerNotHealthyException() from e
 
-    async def get_job_status(self, job_id: str) -> Tuple[str, str, str]:
+    async def get_job_status(self, job_id: str) -> Tuple[str, int, int]:
         """
         Gets the status of an Airbyte connection sync job.
 
@@ -185,6 +185,28 @@ class AirbyteClient:
             job_created_at = job["createdAt"]
             job_updated_at = job["updatedAt"]
             return job_status, job_created_at, job_updated_at
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise err.JobNotFoundException(f"Job {job_id} not found.") from e
+            raise err.AirbyteServerNotHealthyException() from e
+
+    async def get_job_info(self, job_id: str) -> Dict[str, Any]:
+        """
+        Gets the full API response for a given Airbyte Job ID.
+
+        Args:
+            job_id: The ID of the Airbyte job to retrieve information on.
+
+        Returns:
+            Dict of the full API response for the given job ID.
+        """
+        get_connection_url = self.airbyte_base_url + "/jobs/get/"
+        try:
+            response = await self._client.post(get_connection_url, json={"id": job_id})
+            response.raise_for_status()
+
+            return response.json()
+
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
                 raise err.JobNotFoundException(f"Job {job_id} not found.") from e

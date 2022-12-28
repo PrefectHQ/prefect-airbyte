@@ -50,4 +50,6 @@ nav:
     - Client: client.md
     - Configuration: configuration.md
     - Connections: connections.md
+    - Exceptions: exceptions.md
+    - Flows: flows.md
     - Server: server.md
