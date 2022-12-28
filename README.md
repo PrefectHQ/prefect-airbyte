@@ -41,6 +41,8 @@ Install `prefect-airbyte`
 pip install prefect-airbyte
 ```
 
+A list of available blocks in `prefect-airbyte` and their setup instructions can be found [here](https://PrefectHQ.github.io/prefect-airbyte/#blocks-catalog/).
+
 ### Examples
 #### Create an `AirbyteServer` block and save it
 ```python
@@ -177,7 +179,7 @@ If you encounter and bugs while using `prefect-airbyte`, feel free to open an is
 
 If you have any questions or issues while using `prefect-airbyte`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack)
 
-Feel free to ⭐️ or watch [`prefect-airbyte`](https://github.com/PrefectHQ/prefect-airbyte) for updates too!
+Feel free to star or watch [`prefect-airbyte`](https://github.com/PrefectHQ/prefect-airbyte) for updates too!
 
 ## Contribute
 
