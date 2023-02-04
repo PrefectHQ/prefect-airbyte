@@ -30,6 +30,7 @@ class AirbyteServer(Block):
     _block_type_name = "Airbyte Server"
     _block_type_slug = "airbyte-server"
     _logo_url = "https://images.ctfassets.net/zscdif0zqppk/6gm7wsC7ANnKYQsm7oiSYz/aac1ad5e054d35d9e24af8d6ed3aed5f/59758427?h=250"  # noqa
+    _documentation_url = "https://prefecthq.github.io/prefect-airbyte/server/#prefect_airbyte.server.AirbyteServer"  # noqa
 
     username: str = Field(
         default="airbyte",
