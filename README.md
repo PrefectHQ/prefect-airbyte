@@ -1,11 +1,13 @@
 # prefect-airbyte
 
 <p align="center">
+    <!--- Insert a cover image here -->
+    <!--- <br> -->
     <a href="https://pypi.python.org/pypi/prefect-airbyte/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-airbyte?color=0052FF&labelColor=090422"></a>
     <a href="https://github.com/PrefectHQ/prefect-airbyte/" alt="Stars">
         <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
-    <a href="https://pepy.tech/badge/prefect-airbyte/" alt="Downloads">
+    <a href="https://pypistats.org/packages/prefect-airbyte/" alt="Downloads">
         <img src="https://img.shields.io/pypi/dm/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
     <a href="https://github.com/PrefectHQ/prefect-airbyte/pulse" alt="Activity">
         <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-airbyte?color=0052FF&labelColor=090422" /></a>
