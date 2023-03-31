@@ -26,7 +26,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           commit-message: Updating collection with changes to prefect-collection-template
-          token: ${{ secrets.COLLECTIONS_REPO_RW_WORKFLOWS_RW }}
+          token: ${{ secrets.COLLECTIONS_CONTENTS_PRS_WORKFLOWS_RW }}
           branch: sync-with-template
           delete-branch: true
           title: Sync Collection with changes to prefect-collection-template
