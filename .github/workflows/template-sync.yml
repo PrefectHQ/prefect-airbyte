@@ -23,7 +23,7 @@ jobs:
         run: cruft update -y
 
       - name: Submit PR
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           commit-message: Updating collection with changes to prefect-collection-template
           token: ${{ secrets.COLLECTIONS_CONTENTS_PRS_WORKFLOWS_RW }}
