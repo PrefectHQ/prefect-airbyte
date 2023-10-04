@@ -8,7 +8,13 @@ from warnings import warn
 from prefect import get_run_logger, task
 from prefect.blocks.abstract import JobBlock, JobRun
 from prefect.utilities.asyncutils import sync_compatible
-from pydantic import BaseModel, Field
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import BaseModel, Field
+else:
+    from pydantic import BaseModel, Field
+
 from typing_extensions import Literal
 
 from prefect_airbyte import exceptions as err
