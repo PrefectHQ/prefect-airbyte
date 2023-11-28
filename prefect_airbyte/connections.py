@@ -313,7 +313,7 @@ class AirbyteConnection(JobBlock):
     """
 
     _block_type_name = "Airbyte Connection"
-    _logo_url = "https://images.ctfassets.net/zscdif0zqppk/6gm7wsC7ANnKYQsm7oiSYz/aac1ad5e054d35d9e24af8d6ed3aed5f/59758427?h=250"  # noqa: E501
+    _logo_url = "https://cdn.sanity.io/images/3ugk85nk/production/7f50097d1915fe75b0ee84c951c742a83d3c53cb-250x250.png"  # noqa: E501
     _documentation_url = "https://prefecthq.github.io/prefect-airbyte/connections/#prefect_airbyte.connections.AirbyteConnection"  # noqa
 
     airbyte_server: AirbyteServer = Field(
